@@ -7,15 +7,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane id="AnchorPane" maxHeight="500.0" maxWidth="600.0" minHeight="500.0" minWidth="600.0" pickOnBounds="false" prefHeight="500.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="miccpbl1.client.device.view.controller.ControllerView">
+<AnchorPane id="AnchorPane" maxHeight="500.0" maxWidth="600.0" minHeight="500.0" minWidth="600.0" pickOnBounds="false" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpbl1.client.device.view.controller.ControllerView">
    <children>
       <TextField fx:id="textFieldIpServer" layoutX="88.0" layoutY="21.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite o IP do Servidor" />
       <TextField fx:id="textFieldPortServer" layoutX="88.0" layoutY="60.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite a Porta do Servidor" />
       <Label layoutX="63.0" layoutY="26.0" text="IP:" />
       <Label layoutX="41.0" layoutY="65.0" text="Porta:" />
-      <Button fx:id="btnConect" layoutX="500.0" layoutY="59.0" mnemonicParsing="false" text="Conectar" />
-      <Label fx:id="labelStatusConection" disable="true" layoutX="500.0" layoutY="25.0" prefHeight="15.0" prefWidth="77.0" text="Conectado" textAlignment="CENTER" />
+      <Button fx:id="btnConect" layoutX="501.0" layoutY="47.0" mnemonicParsing="false" text="Conectar" />
+      <Label fx:id="labelStatusConection" disable="true" layoutX="489.0" layoutY="26.0" prefHeight="15.0" prefWidth="100.0" text="Desconectado" textAlignment="CENTER" wrapText="true" />
       <ComboBox fx:id="comboPatient" layoutX="224.0" layoutY="101.0" prefWidth="150.0" promptText="Pacientes" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="106.0" layoutX="97.0" layoutY="167.0" stroke="BLACK" strokeType="INSIDE" width="106.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="100.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
@@ -23,22 +22,23 @@
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="250.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="106.0" layoutX="397.0" layoutY="167.0" stroke="BLACK" strokeType="INSIDE" width="106.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="400.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-      <TextField fx:id="textFieldPressure" layoutX="130.0" layoutY="279.0" maxHeight="25.0" maxWidth="40.0" minHeight="25.0" minWidth="40.0" prefHeight="25.0" prefWidth="40.0" />
-      <TextField fx:id="textFieldBeats" layoutX="281.0" layoutY="279.0" maxHeight="25.0" maxWidth="40.0" minHeight="25.0" minWidth="40.0" prefHeight="25.0" prefWidth="40.0" />
-      <Button fx:id="btnIncreasePressure" layoutX="99.0" layoutY="279.0" maxHeight="20.0" maxWidth="20.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" text="+" />
-      <Button fx:id="btnDecreasePressure" layoutX="171.0" layoutY="279.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="20.0" text="-" />
-      <Button fx:id="btnDecreaseBeats" layoutX="322.0" layoutY="279.0" maxHeight="25.0" maxWidth="30.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="30.0" text="-" />
-      <Button fx:id="btnIncreaseBeats" layoutX="250.0" layoutY="279.0" maxHeight="20.0" maxWidth="20.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" text="+" />
-      <Button fx:id="btnSwitch" layoutX="425.0" layoutY="279.0" maxHeight="25.0" maxWidth="60.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" text="Trocar" />
-      <Button fx:id="btnSend" layoutX="269.0" layoutY="441.0" mnemonicParsing="false" text="Enviar" />
+      <TextField fx:id="textFieldPressure" layoutX="130.0" layoutY="279.0" maxHeight="25.0" maxWidth="40.0" minHeight="25.0" minWidth="40.0" onKeyReleased="#eventSetPressure" prefHeight="25.0" prefWidth="40.0" />
+      <TextField fx:id="textFieldBeats" layoutX="281.0" layoutY="279.0" maxHeight="25.0" maxWidth="40.0" minHeight="25.0" minWidth="40.0" onKeyReleased="#eventSetBeats" prefHeight="25.0" prefWidth="40.0" />
+      <Button fx:id="btnIncreasePressure" layoutX="99.0" layoutY="279.0" maxHeight="20.0" maxWidth="20.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventIncreasePressure" prefHeight="20.0" prefWidth="20.0" text="+" />
+      <Button fx:id="btnDecreasePressure" layoutX="171.0" layoutY="279.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventDecreasePressure" prefHeight="25.0" prefWidth="20.0" text="-" />
+      <Button fx:id="btnDecreaseBeats" layoutX="322.0" layoutY="279.0" maxHeight="25.0" maxWidth="30.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventDecreaseBeats" prefHeight="25.0" prefWidth="30.0" text="-" />
+      <Button fx:id="btnIncreaseBeats" layoutX="250.0" layoutY="279.0" maxHeight="20.0" maxWidth="20.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventIncreaseBeats" prefHeight="20.0" prefWidth="20.0" text="+" />
+      <Button fx:id="btnSwitch" layoutX="425.0" layoutY="279.0" maxHeight="25.0" maxWidth="60.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventSwitchStatusMovement" prefHeight="25.0" prefWidth="60.0" text="Trocar" />
+      <Button fx:id="btnSend" layoutX="269.0" layoutY="441.0" mnemonicParsing="false" onAction="#sendData" text="Enviar" />
       <CheckBox fx:id="checkBoxPatientRisk" layoutX="232.0" layoutY="339.0" mnemonicParsing="false" text="Paciente de Risco" />
-      <TextField fx:id="textFieldRangeRefresh" layoutX="363.0" layoutY="48.0" prefHeight="25.0" prefWidth="50.0" promptText="Taxa" />
+      <TextField fx:id="textFieldRangeRefresh" layoutX="324.0" layoutY="47.0" prefHeight="25.0" prefWidth="50.0" promptText="Taxa" />
       <Label layoutX="314.0" layoutY="25.0" text="Taxa de Atualização(s)" />
       <Label layoutX="98.0" layoutY="142.0" text="Pressão(mmHg)" />
       <Label layoutX="232.0" layoutY="142.0" text="Batimentos(BTM/Min)" />
       <Label layoutX="390.0" layoutY="142.0" text="Estado de Atividade" />
-      <Label fx:id="labelPressure" disable="true" layoutX="112.0" layoutY="177.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
-      <Label fx:id="labelBeats" disable="true" layoutX="261.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
-      <Label fx:id="labelMovement" disable="true" layoutX="412.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="labelPressure" contentDisplay="CENTER" layoutX="112.0" layoutY="177.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="labelBeats" layoutX="261.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="labelMovement" layoutX="412.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
+      <Button fx:id="btnRangeRefresh" layoutX="381.0" layoutY="47.0" mnemonicParsing="false" prefHeight="25.0" text="Alterar" />
    </children>
 </AnchorPane>
