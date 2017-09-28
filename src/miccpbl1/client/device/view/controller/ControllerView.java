@@ -49,6 +49,12 @@ public class ControllerView implements Initializable {
     /* Declaração dos CheckBox */
     @FXML
     private CheckBox checkBoxPatientRisk = null;
+    @FXML
+    private CheckBox checkBoxRandomPressure = null;
+    @FXML
+    private CheckBox checkBoxRandomBeats = null;
+    @FXML
+    private CheckBox checkBoxRandomMovement = null;
 
     /* Declaração dos TextField's */
     @FXML
@@ -80,18 +86,18 @@ public class ControllerView implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        controller = Controller.getController();
+        setController(Controller.getController());
     }
 
     @FXML
     private void sendData() {
 
         try {
-            String pressure = labelPressure.getText();
-            String btmBeats = labelBeats.getText();
-            String movement = labelMovement.getText();
-            String patientRisk = checkBoxPatientRisk.selectedProperty().toString();
-            controller.updateStatusPatient(btmBeats, movement, pressure, patientRisk);
+            String pressure = getLabelPressure().getText();
+            String btmBeats = getLabelBeats().getText();
+            String movement = getLabelMovement().getText();
+            String patientRisk = getCheckBoxPatientRisk().selectedProperty().toString();
+            getController().updateStatusPatient(btmBeats, movement, pressure, patientRisk);
         } catch (NullHeartBeatsException ex) {
             Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InvalidHeartBeatsException ex) {
@@ -104,119 +110,427 @@ public class ControllerView implements Initializable {
     @FXML
     private void eventUpdateRangeRefresh() {
 
-        String rangeRefresh = textFieldRangeRefresh.getText();
-        controller.updateRangeRefresh(rangeRefresh);
+        String rangeRefresh = getTextFieldRangeRefresh().getText();
+        getController().updateRangeRefresh(rangeRefresh);
     }
 
     @FXML
     private void eventIncreasePressure() {
 
-        if (labelPressure == null) {
+        if (getLabelPressure() == null) {
             return;
-        } else if ("Sem Paciente".equals(labelPressure.getText())) {
+        } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
             return;
         }
-        int pressure = Integer.parseInt(labelPressure.getText());
+        int pressure = Integer.parseInt(getLabelPressure().getText());
         pressure++;
-        labelPressure.setText(Integer.toString(pressure));
+        getLabelPressure().setText(Integer.toString(pressure));
     }
 
     @FXML
     private void eventSetPressure() {
-        if (textFieldPressure == null) {
+        if (getTextFieldPressure() == null) {
             return;
-        } else if (textFieldPressure.getText().trim().isEmpty()) {
+        } else if (getTextFieldPressure().getText().trim().isEmpty()) {
             return;
         } else {
             try {
-                int pressure = Integer.parseInt(textFieldPressure.getText());
+                int pressure = Integer.parseInt(getTextFieldPressure().getText());
                 if (pressure < 0) {
                     return;
                 }
             } catch (Exception e) {
                 return;
             }
-            labelPressure.setText(textFieldPressure.getText());
+            getLabelPressure().setText(getTextFieldPressure().getText());
         }
     }
 
     @FXML
     private void eventDecreasePressure() {
 
-        if (labelPressure == null) {
+        if (getLabelPressure() == null) {
             return;
-        } else if ("Sem Paciente".equals(labelPressure.getText())) {
+        } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
             return;
         }
-        int pressure = Integer.parseInt(labelPressure.getText());
+        int pressure = Integer.parseInt(getLabelPressure().getText());
         if (pressure > 0) {
             pressure--;
         }
-        labelPressure.setText(Integer.toString(pressure));
+        getLabelPressure().setText(Integer.toString(pressure));
     }
 
     @FXML
     private void eventIncreaseBeats() {
 
-        if (labelBeats == null) {
+        if (getLabelBeats() == null) {
             return;
-        } else if ("Sem Paciente".equals(labelBeats.getText())) {
+        } else if ("Sem Paciente".equals(getLabelBeats().getText())) {
             return;
         }
-        int beats = Integer.parseInt(labelBeats.getText());
+        int beats = Integer.parseInt(getLabelBeats().getText());
         beats++;
-        labelBeats.setText(Integer.toString(beats));
+        getLabelBeats().setText(Integer.toString(beats));
     }
 
     @FXML
     private void eventSetBeats() {
-        if (textFieldBeats == null) {
+        if (getTextFieldBeats() == null) {
             return;
-        } else if (textFieldBeats.getText().trim().isEmpty()) {
+        } else if (getTextFieldBeats().getText().trim().isEmpty()) {
             return;
         } else {
             try {
-                int beats = Integer.parseInt(textFieldBeats.getText());
+                int beats = Integer.parseInt(getTextFieldBeats().getText());
                 if (beats < 0) {
                     return;
                 }
             } catch (Exception e) {
                 return;
             }
-            labelBeats.setText(textFieldBeats.getText());
+            getLabelBeats().setText(getTextFieldBeats().getText());
         }
     }
 
     @FXML
     private void eventDecreaseBeats() {
 
-        if (labelBeats == null) {
+        if (getLabelBeats() == null) {
             return;
-        } else if ("Sem Paciente".equals(labelBeats.getText())) {
+        } else if ("Sem Paciente".equals(getLabelBeats().getText())) {
             return;
         }
-        int beats = Integer.parseInt(labelBeats.getText());
+        int beats = Integer.parseInt(getLabelBeats().getText());
         if (beats > 0) {
             beats--;
         }
-        labelBeats.setText(Integer.toString(beats));
+        getLabelBeats().setText(Integer.toString(beats));
     }
     
     @FXML
     private void eventSwitchStatusMovement() {
         
-        if (labelMovement == null) {
+        if (getLabelMovement() == null) {
             return;
-        } else if ("Sem Paciente".equals(labelMovement.getText())) {
-            labelMovement.setText("Em Movimento");
+        } else if ("Sem Paciente".equals(getLabelMovement().getText())) {
+            getLabelMovement().setText("Em Movimento");
             return;
         } else {
-            if (labelMovement.getText().equals("Em Movimento")) {
-                labelMovement.setText("Em Repouso");
+            if (getLabelMovement().getText().equals("Em Movimento")) {
+                getLabelMovement().setText("Em Repouso");
             }
             else{
-                labelMovement.setText("Em Movimento");
+                getLabelMovement().setText("Em Movimento");
             }
         }
+    }
+
+    /**
+     * @return the btnRangeRefresh
+     */
+    public Button getBtnRangeRefresh() {
+        return btnRangeRefresh;
+    }
+
+    /**
+     * @param btnRangeRefresh the btnRangeRefresh to set
+     */
+    public void setBtnRangeRefresh(Button btnRangeRefresh) {
+        this.btnRangeRefresh = btnRangeRefresh;
+    }
+
+    /**
+     * @return the btnConect
+     */
+    public Button getBtnConect() {
+        return btnConect;
+    }
+
+    /**
+     * @param btnConect the btnConect to set
+     */
+    public void setBtnConect(Button btnConect) {
+        this.btnConect = btnConect;
+    }
+
+    /**
+     * @return the btnIncreasePressure
+     */
+    public Button getBtnIncreasePressure() {
+        return btnIncreasePressure;
+    }
+
+    /**
+     * @param btnIncreasePressure the btnIncreasePressure to set
+     */
+    public void setBtnIncreasePressure(Button btnIncreasePressure) {
+        this.btnIncreasePressure = btnIncreasePressure;
+    }
+
+    /**
+     * @return the btnDecreasePressure
+     */
+    public Button getBtnDecreasePressure() {
+        return btnDecreasePressure;
+    }
+
+    /**
+     * @param btnDecreasePressure the btnDecreasePressure to set
+     */
+    public void setBtnDecreasePressure(Button btnDecreasePressure) {
+        this.btnDecreasePressure = btnDecreasePressure;
+    }
+
+    /**
+     * @return the btnIncreaseBeats
+     */
+    public Button getBtnIncreaseBeats() {
+        return btnIncreaseBeats;
+    }
+
+    /**
+     * @param btnIncreaseBeats the btnIncreaseBeats to set
+     */
+    public void setBtnIncreaseBeats(Button btnIncreaseBeats) {
+        this.btnIncreaseBeats = btnIncreaseBeats;
+    }
+
+    /**
+     * @return the btnDecreaseBeats
+     */
+    public Button getBtnDecreaseBeats() {
+        return btnDecreaseBeats;
+    }
+
+    /**
+     * @param btnDecreaseBeats the btnDecreaseBeats to set
+     */
+    public void setBtnDecreaseBeats(Button btnDecreaseBeats) {
+        this.btnDecreaseBeats = btnDecreaseBeats;
+    }
+
+    /**
+     * @return the btnSwitch
+     */
+    public Button getBtnSwitch() {
+        return btnSwitch;
+    }
+
+    /**
+     * @param btnSwitch the btnSwitch to set
+     */
+    public void setBtnSwitch(Button btnSwitch) {
+        this.btnSwitch = btnSwitch;
+    }
+
+    /**
+     * @return the btnSend
+     */
+    public Button getBtnSend() {
+        return btnSend;
+    }
+
+    /**
+     * @param btnSend the btnSend to set
+     */
+    public void setBtnSend(Button btnSend) {
+        this.btnSend = btnSend;
+    }
+
+    /**
+     * @return the checkBoxPatientRisk
+     */
+    public CheckBox getCheckBoxPatientRisk() {
+        return checkBoxPatientRisk;
+    }
+
+    /**
+     * @param checkBoxPatientRisk the checkBoxPatientRisk to set
+     */
+    public void setCheckBoxPatientRisk(CheckBox checkBoxPatientRisk) {
+        this.checkBoxPatientRisk = checkBoxPatientRisk;
+    }
+
+    /**
+     * @return the checkBoxRandomPressure
+     */
+    public CheckBox getCheckBoxRandomPressure() {
+        return checkBoxRandomPressure;
+    }
+
+    /**
+     * @param checkBoxRandomPressure the checkBoxRandomPressure to set
+     */
+    public void setCheckBoxRandomPressure(CheckBox checkBoxRandomPressure) {
+        this.checkBoxRandomPressure = checkBoxRandomPressure;
+    }
+
+    /**
+     * @return the checkBoxRandomBeats
+     */
+    public CheckBox getCheckBoxRandomBeats() {
+        return checkBoxRandomBeats;
+    }
+
+    /**
+     * @param checkBoxRandomBeats the checkBoxRandomBeats to set
+     */
+    public void setCheckBoxRandomBeats(CheckBox checkBoxRandomBeats) {
+        this.checkBoxRandomBeats = checkBoxRandomBeats;
+    }
+
+    /**
+     * @return the checkBoxRandomMovement
+     */
+    public CheckBox getCheckBoxRandomMovement() {
+        return checkBoxRandomMovement;
+    }
+
+    /**
+     * @param checkBoxRandomMovement the checkBoxRandomMovement to set
+     */
+    public void setCheckBoxRandomMovement(CheckBox checkBoxRandomMovement) {
+        this.checkBoxRandomMovement = checkBoxRandomMovement;
+    }
+
+    /**
+     * @return the textFieldIpServer
+     */
+    public TextField getTextFieldIpServer() {
+        return textFieldIpServer;
+    }
+
+    /**
+     * @param textFieldIpServer the textFieldIpServer to set
+     */
+    public void setTextFieldIpServer(TextField textFieldIpServer) {
+        this.textFieldIpServer = textFieldIpServer;
+    }
+
+    /**
+     * @return the textFieldPortServer
+     */
+    public TextField getTextFieldPortServer() {
+        return textFieldPortServer;
+    }
+
+    /**
+     * @param textFieldPortServer the textFieldPortServer to set
+     */
+    public void setTextFieldPortServer(TextField textFieldPortServer) {
+        this.textFieldPortServer = textFieldPortServer;
+    }
+
+    /**
+     * @return the textFieldRangeRefresh
+     */
+    public TextField getTextFieldRangeRefresh() {
+        return textFieldRangeRefresh;
+    }
+
+    /**
+     * @param textFieldRangeRefresh the textFieldRangeRefresh to set
+     */
+    public void setTextFieldRangeRefresh(TextField textFieldRangeRefresh) {
+        this.textFieldRangeRefresh = textFieldRangeRefresh;
+    }
+
+    /**
+     * @return the textFieldPressure
+     */
+    public TextField getTextFieldPressure() {
+        return textFieldPressure;
+    }
+
+    /**
+     * @param textFieldPressure the textFieldPressure to set
+     */
+    public void setTextFieldPressure(TextField textFieldPressure) {
+        this.textFieldPressure = textFieldPressure;
+    }
+
+    /**
+     * @return the textFieldBeats
+     */
+    public TextField getTextFieldBeats() {
+        return textFieldBeats;
+    }
+
+    /**
+     * @param textFieldBeats the textFieldBeats to set
+     */
+    public void setTextFieldBeats(TextField textFieldBeats) {
+        this.textFieldBeats = textFieldBeats;
+    }
+
+    /**
+     * @return the labelStatusConection
+     */
+    public Label getLabelStatusConection() {
+        return labelStatusConection;
+    }
+
+    /**
+     * @param labelStatusConection the labelStatusConection to set
+     */
+    public void setLabelStatusConection(Label labelStatusConection) {
+        this.labelStatusConection = labelStatusConection;
+    }
+
+    /**
+     * @return the labelPressure
+     */
+    public Label getLabelPressure() {
+        return labelPressure;
+    }
+
+    /**
+     * @param labelPressure the labelPressure to set
+     */
+    public void setLabelPressure(Label labelPressure) {
+        this.labelPressure = labelPressure;
+    }
+
+    /**
+     * @return the labelBeats
+     */
+    public Label getLabelBeats() {
+        return labelBeats;
+    }
+
+    /**
+     * @param labelBeats the labelBeats to set
+     */
+    public void setLabelBeats(Label labelBeats) {
+        this.labelBeats = labelBeats;
+    }
+
+    /**
+     * @return the labelMovement
+     */
+    public Label getLabelMovement() {
+        return labelMovement;
+    }
+
+    /**
+     * @param labelMovement the labelMovement to set
+     */
+    public void setLabelMovement(Label labelMovement) {
+        this.labelMovement = labelMovement;
+    }
+
+    /**
+     * @return the controller
+     */
+    public Controller getController() {
+        return controller;
+    }
+
+    /**
+     * @param controller the controller to set
+     */
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
 }

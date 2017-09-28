@@ -40,5 +40,8 @@
       <Label fx:id="labelBeats" layoutX="261.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
       <Label fx:id="labelMovement" layoutX="412.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
       <Button fx:id="btnRangeRefresh" layoutX="381.0" layoutY="47.0" mnemonicParsing="false" prefHeight="25.0" text="Alterar" />
+      <CheckBox fx:id="checkBoxRandomPressure" layoutX="111.0" layoutY="312.0" mnemonicParsing="false" text="Random" />
+      <CheckBox fx:id="checkBoxRandomBeats" layoutX="260.0" layoutY="312.0" mnemonicParsing="false" text="Random" />
+      <CheckBox fx:id="checkBoxRandomMovement" layoutX="416.0" layoutY="312.0" mnemonicParsing="false" text="Random" />
    </children>
 </AnchorPane>
