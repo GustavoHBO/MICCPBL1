@@ -6,6 +6,7 @@
 package miccpbl1.client.device.view.controller;
 
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,7 +17,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import miccpbl1.client.device.controller.Controller;
-import miccpbl1.client.device.view.exceptions.ErrorUnknown;
 import miccpbl1.client.device.view.exceptions.InvalidHeartBeatsException;
 import miccpbl1.client.device.view.exceptions.NullHeartBeatsException;
 import miccpbl1.client.device.view.exceptions.NullStatusMovementException;
@@ -45,16 +45,17 @@ public class ControllerView implements Initializable {
     private Button btnSwitch = null;
     @FXML
     private Button btnSend = null;
+    @FXML
+    private Button btnRandomPressure = null;
+    @FXML
+    private Button btnRandomBeats = null;
+    @FXML
+    private Button btnRandomMovement = null;
+
 
     /* Declaração dos CheckBox */
     @FXML
     private CheckBox checkBoxPatientRisk = null;
-    @FXML
-    private CheckBox checkBoxRandomPressure = null;
-    @FXML
-    private CheckBox checkBoxRandomBeats = null;
-    @FXML
-    private CheckBox checkBoxRandomMovement = null;
 
     /* Declaração dos TextField's */
     @FXML
@@ -65,6 +66,8 @@ public class ControllerView implements Initializable {
     private TextField textFieldRangeRefresh = null;
     @FXML
     private TextField textFieldPressure = null;
+    @FXML
+    private TextField textFieldPressureDia = null;
     @FXML
     private TextField textFieldBeats = null;
 
@@ -122,9 +125,11 @@ public class ControllerView implements Initializable {
         } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
             return;
         }
-        int pressure = Integer.parseInt(getLabelPressure().getText());
+        String pressureString = getLabelPressure().getText();
+        int pressure = Integer.parseInt(pressureString.substring(0, pressureString.indexOf("/")));
         pressure++;
-        getLabelPressure().setText(Integer.toString(pressure));
+        pressureString = pressure + pressureString.substring(pressureString.indexOf("/"));
+        getLabelPressure().setText(pressureString);
     }
 
     @FXML
@@ -133,16 +138,12 @@ public class ControllerView implements Initializable {
             return;
         } else if (getTextFieldPressure().getText().trim().isEmpty()) {
             return;
-        } else {
-            try {
-                int pressure = Integer.parseInt(getTextFieldPressure().getText());
-                if (pressure < 0) {
-                    return;
-                }
-            } catch (Exception e) {
-                return;
-            }
-            getLabelPressure().setText(getTextFieldPressure().getText());
+        } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
+            return;
+        }else {
+            String pressureString = getLabelPressure().getText();
+            pressureString = getTextFieldPressure().getText() + pressureString.substring(pressureString.indexOf("/"));
+            getLabelPressure().setText(pressureString);
         }
     }
 
@@ -154,11 +155,60 @@ public class ControllerView implements Initializable {
         } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
             return;
         }
-        int pressure = Integer.parseInt(getLabelPressure().getText());
+        String pressureString = getLabelPressure().getText();
+        int pressure = Integer.parseInt(pressureString.substring(0, pressureString.indexOf("/")));
         if (pressure > 0) {
             pressure--;
         }
-        getLabelPressure().setText(Integer.toString(pressure));
+        pressureString = pressure + pressureString.substring(pressureString.indexOf("/"));
+        getLabelPressure().setText(pressureString);
+    }
+
+    @FXML
+    private void eventIncreasePressureDia() {
+
+        if (getLabelPressure() == null) {
+            return;
+        } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
+            return;
+        }
+        String pressureString = getLabelPressure().getText();
+        int pressure = Integer.parseInt(pressureString.substring(pressureString.indexOf("/") + 1));
+        pressure++;
+        pressureString = pressureString.substring(0, pressureString.indexOf("/") + 1) + pressure;
+        getLabelPressure().setText(pressureString);
+    }
+
+    @FXML
+    private void eventSetPressureDia() {
+        if (getLabelPressure() == null) {
+            return;
+        } else if (getLabelPressure().getText().trim().isEmpty()) {
+            return;
+        } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
+            return;
+        }else {
+            String pressureString = getLabelPressure().getText();
+            pressureString = pressureString.substring(0, pressureString.indexOf("/") + 1) + textFieldPressureDia.getText();
+            getLabelPressure().setText(pressureString);
+        }
+    }
+
+    @FXML
+    private void eventDecreasePressureDia() {
+
+        if (getLabelPressure() == null) {
+            return;
+        } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
+            return;
+        }
+        String pressureString = getLabelPressure().getText();
+        int pressure = Integer.parseInt(pressureString.substring(pressureString.indexOf("/") + 1));
+        if (pressure > 0) {
+            pressure--;
+        }
+        pressureString = pressureString.substring(0, pressureString.indexOf("/") + 1) + pressure;
+        getLabelPressure().setText(pressureString);
     }
 
     @FXML
@@ -207,10 +257,10 @@ public class ControllerView implements Initializable {
         }
         getLabelBeats().setText(Integer.toString(beats));
     }
-    
+
     @FXML
     private void eventSwitchStatusMovement() {
-        
+
         if (getLabelMovement() == null) {
             return;
         } else if ("Sem Paciente".equals(getLabelMovement().getText())) {
@@ -219,10 +269,29 @@ public class ControllerView implements Initializable {
         } else {
             if (getLabelMovement().getText().equals("Em Movimento")) {
                 getLabelMovement().setText("Em Repouso");
-            }
-            else{
+            } else {
                 getLabelMovement().setText("Em Movimento");
             }
+        }
+    }
+
+    @FXML
+    private void eventBtnRandomPressure() {
+        Random random = new Random();
+        getLabelPressure().setText(Integer.toString(random.nextInt(120) + 80) + "/" + Integer.toString(random.nextInt(70) + 60));
+    }
+
+    @FXML
+    private void eventBtnRandomBeats() {
+        Random random = new Random();
+        getLabelBeats().setText(Integer.toString(random.nextInt(201)));
+    }
+
+    @FXML
+    private void eventBtnRandomMovement() {
+        Random random = new Random();
+        if (random.nextInt(2) == 0) {
+            eventSwitchStatusMovement();
         }
     }
 
@@ -350,48 +419,6 @@ public class ControllerView implements Initializable {
      */
     public void setCheckBoxPatientRisk(CheckBox checkBoxPatientRisk) {
         this.checkBoxPatientRisk = checkBoxPatientRisk;
-    }
-
-    /**
-     * @return the checkBoxRandomPressure
-     */
-    public CheckBox getCheckBoxRandomPressure() {
-        return checkBoxRandomPressure;
-    }
-
-    /**
-     * @param checkBoxRandomPressure the checkBoxRandomPressure to set
-     */
-    public void setCheckBoxRandomPressure(CheckBox checkBoxRandomPressure) {
-        this.checkBoxRandomPressure = checkBoxRandomPressure;
-    }
-
-    /**
-     * @return the checkBoxRandomBeats
-     */
-    public CheckBox getCheckBoxRandomBeats() {
-        return checkBoxRandomBeats;
-    }
-
-    /**
-     * @param checkBoxRandomBeats the checkBoxRandomBeats to set
-     */
-    public void setCheckBoxRandomBeats(CheckBox checkBoxRandomBeats) {
-        this.checkBoxRandomBeats = checkBoxRandomBeats;
-    }
-
-    /**
-     * @return the checkBoxRandomMovement
-     */
-    public CheckBox getCheckBoxRandomMovement() {
-        return checkBoxRandomMovement;
-    }
-
-    /**
-     * @param checkBoxRandomMovement the checkBoxRandomMovement to set
-     */
-    public void setCheckBoxRandomMovement(CheckBox checkBoxRandomMovement) {
-        this.checkBoxRandomMovement = checkBoxRandomMovement;
     }
 
     /**
@@ -532,5 +559,61 @@ public class ControllerView implements Initializable {
      */
     public void setController(Controller controller) {
         this.controller = controller;
+    }
+
+    /**
+     * @return the btnRandomPressure
+     */
+    public Button getBtnRandomPressure() {
+        return btnRandomPressure;
+    }
+
+    /**
+     * @param btnRandomPressure the btnRandomPressure to set
+     */
+    public void setBtnRandomPressure(Button btnRandomPressure) {
+        this.btnRandomPressure = btnRandomPressure;
+    }
+
+    /**
+     * @return the btnRandomBeats
+     */
+    public Button getBtnRandomBeats() {
+        return btnRandomBeats;
+    }
+
+    /**
+     * @param btnRandomBeats the btnRandomBeats to set
+     */
+    public void setBtnRandomBeats(Button btnRandomBeats) {
+        this.btnRandomBeats = btnRandomBeats;
+    }
+
+    /**
+     * @return the btnRandomMovement
+     */
+    public Button getBtnRandomMovement() {
+        return btnRandomMovement;
+    }
+
+    /**
+     * @param btnRandomMovement the btnRandomMovement to set
+     */
+    public void setBtnRandomMovement(Button btnRandomMovement) {
+        this.btnRandomMovement = btnRandomMovement;
+    }
+
+    /**
+     * @return the textFieldPressureDia
+     */
+    public TextField getTextFieldPressureDia() {
+        return textFieldPressureDia;
+    }
+
+    /**
+     * @param textFieldPressureDia the textFieldPressureDia to set
+     */
+    public void setTextFieldPressureDia(TextField textFieldPressureDia) {
+        this.textFieldPressureDia = textFieldPressureDia;
     }
 }
