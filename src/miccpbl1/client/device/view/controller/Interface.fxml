@@ -13,7 +13,7 @@
       <TextField fx:id="textFieldPortServer" layoutX="88.0" layoutY="60.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite a Porta do Servidor" />
       <Label layoutX="63.0" layoutY="26.0" text="IP:" />
       <Label layoutX="41.0" layoutY="65.0" text="Porta:" />
-      <Button fx:id="btnConect" layoutX="501.0" layoutY="47.0" mnemonicParsing="false" text="Conectar" />
+      <Button fx:id="btnConect" layoutX="501.0" layoutY="47.0" mnemonicParsing="false" onAction="#eventBtnConnect" text="Conectar" />
       <Label fx:id="labelStatusConection" disable="true" layoutX="489.0" layoutY="26.0" prefHeight="15.0" prefWidth="100.0" text="Desconectado" textAlignment="CENTER" wrapText="true" />
       <ComboBox fx:id="comboPatient" layoutX="224.0" layoutY="101.0" prefWidth="150.0" promptText="Pacientes" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="106.0" layoutX="97.0" layoutY="167.0" stroke="BLACK" strokeType="INSIDE" width="106.0" />
@@ -42,7 +42,7 @@
       <Button fx:id="btnRangeRefresh" layoutX="381.0" layoutY="47.0" mnemonicParsing="false" prefHeight="25.0" text="Alterar" />
       <Button fx:id="btnRandomPressure" layoutX="112.0" layoutY="335.0" maxHeight="25.0" maxWidth="77.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventBtnRandomPressure" prefHeight="25.0" prefWidth="77.0" text="Random" />
       <Button fx:id="btnRandomBeats" layoutX="261.0" layoutY="307.0" maxHeight="25.0" maxWidth="77.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventBtnRandomBeats" prefHeight="25.0" prefWidth="77.0" text="Random" />
-      <Button fx:id="btnRandomMovement" layoutX="417.0" layoutY="307.0" maxHeight="25.0" maxWidth="77.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventSwitchStatusMovement" prefHeight="25.0" prefWidth="77.0" text="Random" />
+      <Button fx:id="btnRandomMovement" layoutX="417.0" layoutY="307.0" maxHeight="25.0" maxWidth="77.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventBtnRandomMovement" prefHeight="25.0" prefWidth="77.0" text="Random" />
       <Button fx:id="btnDecreasePressure1" layoutX="171.0" layoutY="307.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventDecreasePressureDia" prefHeight="25.0" prefWidth="20.0" text="-" />
       <Button fx:id="btnIncreasePressure1" layoutX="99.0" layoutY="307.0" maxHeight="20.0" maxWidth="20.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventIncreasePressureDia" prefHeight="20.0" prefWidth="20.0" text="+" />
       <TextField fx:id="textFieldPressureDia" layoutX="130.0" layoutY="307.0" maxHeight="25.0" maxWidth="40.0" minHeight="25.0" minWidth="40.0" onAction="#eventSetPressureDia" onKeyReleased="#eventSetPressureDia" prefHeight="25.0" prefWidth="40.0" />

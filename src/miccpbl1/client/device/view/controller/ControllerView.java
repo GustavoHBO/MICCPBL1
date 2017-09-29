@@ -5,7 +5,10 @@
  */
 package miccpbl1.client.device.view.controller;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -17,9 +20,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import miccpbl1.client.device.controller.Controller;
+import miccpbl1.client.device.view.exceptions.DataInvalidException;
 import miccpbl1.client.device.view.exceptions.InvalidHeartBeatsException;
+import miccpbl1.client.device.view.exceptions.IpServerInvalidException;
 import miccpbl1.client.device.view.exceptions.NullHeartBeatsException;
 import miccpbl1.client.device.view.exceptions.NullStatusMovementException;
+import miccpbl1.client.device.view.exceptions.PortServerInvalidException;
 
 /**
  * FXML Controller class
@@ -107,14 +113,24 @@ public class ControllerView implements Initializable {
             Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NullStatusMovementException ex) {
             Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SocketException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DataInvalidException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @FXML
     private void eventUpdateRangeRefresh() {
 
-        String rangeRefresh = getTextFieldRangeRefresh().getText();
-        getController().updateRangeRefresh(rangeRefresh);
+        try {
+            String rangeRefresh = getTextFieldRangeRefresh().getText();
+            getController().updateRangeRefresh(rangeRefresh);
+        } catch (SocketException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DataInvalidException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @FXML
@@ -140,7 +156,7 @@ public class ControllerView implements Initializable {
             return;
         } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
             return;
-        }else {
+        } else {
             String pressureString = getLabelPressure().getText();
             pressureString = getTextFieldPressure().getText() + pressureString.substring(pressureString.indexOf("/"));
             getLabelPressure().setText(pressureString);
@@ -187,7 +203,7 @@ public class ControllerView implements Initializable {
             return;
         } else if ("Sem Paciente".equals(getLabelPressure().getText())) {
             return;
-        }else {
+        } else {
             String pressureString = getLabelPressure().getText();
             pressureString = pressureString.substring(0, pressureString.indexOf("/") + 1) + textFieldPressureDia.getText();
             getLabelPressure().setText(pressureString);
@@ -292,6 +308,21 @@ public class ControllerView implements Initializable {
         Random random = new Random();
         if (random.nextInt(2) == 0) {
             eventSwitchStatusMovement();
+        }
+    }
+
+    @FXML
+    private void eventBtnConnect() {
+        try {
+            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
+        } catch (IpServerInvalidException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (PortServerInvalidException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
