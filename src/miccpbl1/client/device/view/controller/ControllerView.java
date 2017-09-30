@@ -314,15 +314,16 @@ public class ControllerView implements Initializable {
     @FXML
     private void eventBtnConnect() {
         try {
-            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
+            //controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
+            controller.connectionServer("127.0.0.1", "12345");
         } catch (IpServerInvalidException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         } catch (UnknownHostException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         } catch (PortServerInvalidException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         } catch (IOException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         }
     }
 

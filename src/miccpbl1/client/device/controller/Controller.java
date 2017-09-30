@@ -29,6 +29,9 @@ public class Controller {
     private static Controller controller = null;
     private String ipServer = null;
     private int portServer = 0;
+    private final int lengthServerProtocol = 4;
+
+    private Thread thread = null;
 
     public static Controller getController() {
         if (controller == null) {
@@ -54,7 +57,7 @@ public class Controller {
         } else if (data.trim().isEmpty()) {
             throw new DataInvalidException();
         } else {
-            
+
         }
         return 0;
     }
@@ -65,6 +68,7 @@ public class Controller {
         int port = 0;
         DatagramPacket sendPacket = null;
         byte[] sendData = null;
+        byte[] receiveData = new byte[1024];
         Runnable run = null;
 
         if (ipServer == null) {
@@ -79,33 +83,51 @@ public class Controller {
             ipAddress = InetAddress.getByName(ipServer);
             sendData = "09testeConnection09".getBytes();
             port = Integer.parseInt(portServer);
-            if(port < 1024 || port > 65535){
+            if (port < 1024 || port > 65535) {
                 throw new PortServerInvalidException();
             }
             this.portServer = port;
             this.ipServer = ipServer;
             sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
             socketClient.send(sendPacket);
-            
-            
-            
+
             run = new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        System.out.println(".run()");
-                        DatagramSocket socketClient = new DatagramSocket();
+                        String data = null;
+                        //DatagramSocket socketClient = new DatagramSocket();
                         byte[] receiveData = new byte[1024];
+                        String codeInit = null;
+                        String codeEnd = null;
+                        int lastCodeIndex = 0;
+
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                        while(true){
-                            socketClient.receive(receivePacket);
+                        socketClient.receive(receivePacket);
+                        data = new String(receivePacket.getData());
+                        if (!(data.length() > lengthServerProtocol * 2) || data.trim().isEmpty()) {
+                            return;
+                        } else {
+                            System.out.println(new String(data.getBytes()));
+                            codeInit = data.substring(0, lengthServerProtocol);
+                            System.out.println(codeInit);
+                            lastCodeIndex = data.lastIndexOf(codeInit);
+                            if (lastCodeIndex == -1) {
+                                return;
+                            }
+                            System.out.println(lastCodeIndex);
+                            data = data.substring(lengthServerProtocol, lastCodeIndex);
+                            if (data.equals("testSucessful")) {
+                                System.out.println("Mensagem enviada e recebida corretamente");
+                            }
                         }
+
                     } catch (IOException ex) {
                         Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
             };
-            Thread thread = new Thread(run);
+            this.thread = new Thread(run);
             thread.start();
         }
 

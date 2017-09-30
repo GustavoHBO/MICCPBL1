@@ -5,7 +5,13 @@
  */
 package miccpbl1.server;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import miccpbl1.server.model.Paciente;
 
 /**
@@ -13,21 +19,84 @@ import miccpbl1.server.model.Paciente;
  * @author gustavo
  */
 public class Server {
-    
+
     private ArrayList<Paciente> listaPacientes = null;
-    
+    private int port = 12345;
+
+    private final int lengthCodeProtocol = 2;
+
+    private DatagramSocket serverSocket = null;
+    private DatagramPacket receivePacket = null;
+
+    byte[] receiveData = null;
+    byte[] sendData = null;
+
+    public static void main(String args[]) {
+        try {
+            new Server().startServer();
+        } catch (SocketException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void startServer() throws SocketException {
+        serverSocket = new DatagramSocket(port);
+
+        receiveData = new byte[1024];
+        sendData = null;
+
+        while (true) {
+            try {
+                receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                serverSocket.receive(receivePacket);
+                Runnable run = new Runnable() {
+                    @Override
+                    public void run() {
+                        String data = new String(receivePacket.getData());
+                        identifyAction(data);
+                    }
+
+                    private void identifyAction(String data) {
+                        String initCode = data.substring(0, lengthCodeProtocol);
+                        int lastCodeIndex = data.lastIndexOf(initCode);
+                        if(lastCodeIndex == 0){
+                            return;
+                        }
+                        String endCode = data.substring(lastCodeIndex, lastCodeIndex + 2);
+                        if (!initCode.equals(endCode)) {
+                            return;
+                        } else {
+                            DatagramPacket sendPacket = null;
+                            if (initCode.equals("09")) {
+                                try {
+                                    sendData = "0x09testSucessful0x09".getBytes();
+                                    sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
+                                    serverSocket.send(sendPacket);
+                                } catch (IOException ex) {
+                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            }
+                        }
+                    }
+                };
+                new Thread(run).start();
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
+
     /**
      * Cadastra o paciente no servidor.
-     * @param paciente 
      */
     public void cadastrarPaciente(Paciente paciente) {
-        if(listaPacientes == null) {
+        if (listaPacientes == null) {
             listaPacientes = new ArrayList<Paciente>();
         }
-        if(listaPacientes.contains(paciente)){
+        if (listaPacientes.contains(paciente)) {
             return;
-        }
-        else{
+        } else {
             listaPacientes.add(paciente);
         }
     }
@@ -45,6 +114,8 @@ public class Server {
     public void setListaPacientes(ArrayList listaPacientes) {
         this.listaPacientes = listaPacientes;
     }
-    
-    
+
+    public void procurarPaciente(Paciente paciente) {
+
+    }
 }
