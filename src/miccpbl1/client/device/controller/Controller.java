@@ -1,5 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
+ * To change this license header, choose License Headers in Project Properties.  
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -11,6 +11,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import miccpbl1.client.device.view.exceptions.DataInvalidException;
@@ -19,6 +22,7 @@ import miccpbl1.client.device.view.exceptions.IpServerInvalidException;
 import miccpbl1.client.device.view.exceptions.NullHeartBeatsException;
 import miccpbl1.client.device.view.exceptions.NullStatusMovementException;
 import miccpbl1.client.device.view.exceptions.PortServerInvalidException;
+import miccpbl1.model.Paciente;
 
 /**
  *
@@ -26,12 +30,21 @@ import miccpbl1.client.device.view.exceptions.PortServerInvalidException;
  */
 public class Controller {
 
-    private static Controller controller = null;
-    private String ipServer = null;
-    private int portServer = 0;
+    private static Controller controller;
+    private String ipServer;
+    private int portServer;
+    private int rangeRefresh = 5;
     private final int lengthServerProtocol = 4;
 
-    private Thread thread = null;
+    private DatagramSocket socketClient;
+
+    private boolean connected;
+    private boolean randomData = false;
+
+    private Thread thread;
+    private Thread threadRefresh;
+
+    private ArrayList<Paciente> listPatient;
 
     public static Controller getController() {
         if (controller == null) {
@@ -44,14 +57,13 @@ public class Controller {
         controller = null;
     }
 
-    private void receiverData(String data) {
+    private void receiveData(String data) {
 
     }
 
     private int sendData(String data) throws SocketException, DataInvalidException {
         DatagramSocket socketClient = new DatagramSocket();
-        String ipServer = null;
-        InetAddress IPAddress = null;
+        InetAddress IPAddress;
         if (data == null) {
             throw new DataInvalidException();
         } else if (data.trim().isEmpty()) {
@@ -63,13 +75,12 @@ public class Controller {
     }
 
     public void connectionServer(String ipServer, String portServer) throws SocketException, IpServerInvalidException, UnknownHostException, PortServerInvalidException, IOException {
-        DatagramSocket socketClient = new DatagramSocket();
-        InetAddress ipAddress = null;
-        int port = 0;
-        DatagramPacket sendPacket = null;
-        byte[] sendData = null;
-        byte[] receiveData = new byte[1024];
-        Runnable run = null;
+        socketClient = new DatagramSocket();
+        InetAddress ipAddress;
+        int port;
+        DatagramPacket sendPacket;
+        byte[] sendData;
+        Runnable run;
 
         if (ipServer == null) {
             throw new IpServerInvalidException();
@@ -95,12 +106,11 @@ public class Controller {
                 @Override
                 public void run() {
                     try {
-                        String data = null;
+                        String data;
                         //DatagramSocket socketClient = new DatagramSocket();
                         byte[] receiveData = new byte[1024];
-                        String codeInit = null;
-                        String codeEnd = null;
-                        int lastCodeIndex = 0;
+                        String codeInit;
+                        int lastCodeIndex;
 
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         socketClient.receive(receivePacket);
@@ -119,9 +129,10 @@ public class Controller {
                             data = data.substring(lengthServerProtocol, lastCodeIndex);
                             if (data.equals("testSucessful")) {
                                 System.out.println("Mensagem enviada e recebida corretamente");
+                                connected = true;
                             }
                         }
-
+                        socketClient.close();
                     } catch (IOException ex) {
                         Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -133,10 +144,10 @@ public class Controller {
 
     }
 
-    public void cadastrarPaciente(String nome, String cpf, String numero, int btmCardiacos, boolean statusMovimento, String pressaoSanguinea, boolean acEspecial) throws SocketException, DataInvalidException {
+    public void cadastrarPaciente(String nome, String cpf, String numero) throws SocketException, DataInvalidException {
 
         String data = "00";
-        data += nome + "!-" + cpf + "!-" + numero + "!-" + btmCardiacos + "!-" + statusMovimento + "!-" + pressaoSanguinea + "!-" + acEspecial + "00";
+        data += nome + "!-" + cpf + "!-" + numero + "00";
         sendData(data);
     }
 
@@ -162,9 +173,84 @@ public class Controller {
         sendData(data);
     }
 
-    public boolean comfirmationDataReceiverServer(String code) {
+    public boolean confirmationDataReceiverServer(String code) {
         String dataReceived;
 
         return true;
+    }
+
+    public void refreshData() {
+        Runnable runnable;
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                while (connected) {
+                    //connectionServer(ipServer, portServer);
+
+                }
+            }
+        };
+    }
+
+    private void sendDatagramPacket(String data) {
+        try {
+            DatagramPacket sendPacket;
+            byte[] sendData = data.getBytes();
+            InetAddress address = InetAddress.getByName(this.ipServer);
+            sendPacket = new DatagramPacket(sendData, sendData.length, address, portServer);
+            socketClient.send(sendPacket);
+        } catch (IOException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private Paciente findPacient(String cpf) {
+        Iterator<Paciente> it = listPatient.iterator();
+        Paciente findPacient;
+        while (it.hasNext()) {
+            findPacient = it.next();
+            if (findPacient.getCPF().equals(cpf)) {
+                return findPacient;
+            }
+        }
+        return null;
+    }
+
+    public void updateDataPatient(String cpf, String pressure, String beats, String movement, boolean acEspecial) {
+        Paciente pacient = findPacient(cpf);
+        if (pacient == null) {
+
+        } else {
+            pacient.setPressaoSanguinea(pressure);
+            pacient.setBtCardiacos(beats);
+            pacient.setRepouso(movement.equals("Em Movimento"));
+            pacient.setAcEspecial(acEspecial);
+        }
+    }
+    
+    public void randomData(){
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                Iterator<Paciente> it = listPatient.iterator();
+                Random random = new Random();
+                Paciente patient;
+               while (randomData){
+                   if(!it.hasNext()){
+                       it = listPatient.iterator();
+                   }
+                   patient = it.next();
+                   patient.setAcEspecial(random.nextBoolean());
+                   patient.setBtCardiacos(Integer.toString(random.nextInt(200)));
+                   patient.setPressaoSanguinea(Integer.toString(random.nextInt(180))+ "/" + Integer.toString(random.nextInt(160)));
+                   patient.setRepouso(random.nextBoolean());
+               }
+            }
+        };
+        new Thread(run).start();
+    }
+    
+    public void refreshScreen(){
+        
     }
 }

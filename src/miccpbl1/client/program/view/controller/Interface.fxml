@@ -7,6 +7,15 @@
 <?import javafx.scene.layout.*?>
 
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="miccpbl1.client.program.view.controller.ControllerView">
-    
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpbl1.client.program.view.controller.ControllerView">
+   <children>
+      <TableView layoutX="209.0" layoutY="36.0" prefHeight="251.0" prefWidth="391.0">
+        <columns>
+          <TableColumn prefWidth="109.0" resizable="false" text="Nome" />
+          <TableColumn prefWidth="68.0" resizable="false" text="Pressão" />
+            <TableColumn prefWidth="91.0" resizable="false" text="Batimentos" />
+            <TableColumn prefWidth="122.0" resizable="false" text="Status" />
+        </columns>
+      </TableView>
+   </children>
 </AnchorPane>

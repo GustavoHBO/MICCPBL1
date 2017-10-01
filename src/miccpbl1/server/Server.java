@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import miccpbl1.server.model.Paciente;
+import miccpbl1.client.device.view.exceptions.PacientRegisteredException;
+import miccpbl1.server.controller.Controller;
 
 /**
  *
@@ -20,7 +20,8 @@ import miccpbl1.server.model.Paciente;
  */
 public class Server {
 
-    private ArrayList<Paciente> listaPacientes = null;
+    private Controller controllerServer = null;
+
     private int port = 12345;
 
     private final int lengthCodeProtocol = 2;
@@ -40,16 +41,17 @@ public class Server {
     }
 
     private void startServer() throws SocketException {
+        controllerServer = Controller.getController();
         serverSocket = new DatagramSocket(port);
 
         receiveData = new byte[1024];
-        sendData = null;
 
         while (true) {
             try {
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
-                Runnable run = new Runnable() {
+                Runnable run;
+                run = new Runnable() {
                     @Override
                     public void run() {
                         String data = new String(receivePacket.getData());
@@ -59,22 +61,25 @@ public class Server {
                     private void identifyAction(String data) {
                         String initCode = data.substring(0, lengthCodeProtocol);
                         int lastCodeIndex = data.lastIndexOf(initCode);
-                        if(lastCodeIndex == 0){
+                        if (lastCodeIndex == 0) {
                             return;
                         }
                         String endCode = data.substring(lastCodeIndex, lastCodeIndex + 2);
                         if (!initCode.equals(endCode)) {
                             return;
                         } else {
+                            data = data.substring(lengthCodeProtocol, lastCodeIndex);
                             DatagramPacket sendPacket = null;
-                            if (initCode.equals("09")) {
+                            if (initCode.equals("00")) {
                                 try {
-                                    sendData = "0x09testSucessful0x09".getBytes();
-                                    sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
-                                    serverSocket.send(sendPacket);
-                                } catch (IOException ex) {
+                                    controllerServer.registerPacient(data);
+                                    System.out.println("Paciente Registrado!");
+                                } catch (PacientRegisteredException ex) {
                                     Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                                 }
+                            } else if (initCode.equals("09")) {
+                                System.out.println(data);
+                                sendDatagramPacket("0x09testSucessful0x09");
                             }
                         }
                     }
@@ -84,38 +89,16 @@ public class Server {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-
     }
 
-    /**
-     * Cadastra o paciente no servidor.
-     */
-    public void cadastrarPaciente(Paciente paciente) {
-        if (listaPacientes == null) {
-            listaPacientes = new ArrayList<Paciente>();
+    private void sendDatagramPacket(String data) {
+        try {
+            DatagramPacket sendPacket;
+            sendData = data.getBytes();
+            sendPacket = new DatagramPacket(sendData, sendData.length, receivePacket.getAddress(), receivePacket.getPort());
+            serverSocket.send(sendPacket);
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
-        if (listaPacientes.contains(paciente)) {
-            return;
-        } else {
-            listaPacientes.add(paciente);
-        }
-    }
-
-    /**
-     * @return the listaPacientes
-     */
-    public ArrayList getListaPacientes() {
-        return listaPacientes;
-    }
-
-    /**
-     * @param listaPacientes the listaPacientes to set
-     */
-    public void setListaPacientes(ArrayList listaPacientes) {
-        this.listaPacientes = listaPacientes;
-    }
-
-    public void procurarPaciente(Paciente paciente) {
-
     }
 }

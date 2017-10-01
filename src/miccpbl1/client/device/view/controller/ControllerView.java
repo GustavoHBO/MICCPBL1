@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -325,6 +326,11 @@ public class ControllerView implements Initializable {
         } catch (IOException ex) {
             System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         }
+    }
+
+    @FXML
+    private void eventBtnSend() {
+        
     }
 
     /**
