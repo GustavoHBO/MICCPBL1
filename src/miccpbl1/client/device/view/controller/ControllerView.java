@@ -315,6 +315,12 @@ public class ControllerView implements Initializable {
     private void eventBtnConnect() {
         try {
             controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
+            if(controller.isConnected()){
+                labelStatusConection.setText("Conectado");
+                labelStatusConection.setDisable(false);
+            } else{
+                labelStatusConection.setText("Desconectado");
+            }
         } catch (IpServerInvalidException ex) {
             System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         } catch (UnknownHostException ex) {

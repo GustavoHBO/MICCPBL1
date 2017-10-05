@@ -14,8 +14,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import miccpbl1.client.device.view.exceptions.ConnectionLostException;
 import miccpbl1.client.device.view.exceptions.DataInvalidException;
 import miccpbl1.client.device.view.exceptions.InvalidHeartBeatsException;
 import miccpbl1.client.device.view.exceptions.IpServerInvalidException;
@@ -198,11 +200,50 @@ public class Controller {
             patientRisk = random.nextBoolean() ? "Risk" : "Not Risk";
             try {
                 updateStatusPatient(patient.getCPF(), btmCardiacos, statusMovimento, pressaoSanguinea, patientRisk);
-                //this.wait(5 * 1000);
             } catch (NullHeartBeatsException | InvalidHeartBeatsException | NullStatusMovementException | SocketException | DataInvalidException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
+            TimeUnit.SECONDS.sleep(rangeRefresh);
         }
+    }
+    
+    private void testConnection (int time){
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                byte[] dataReceive;
+                DatagramPacket packetReceive;
+                sendDatagramPacket("09testConnection09");
+                String data;
+                String codeProtocol, lastCodeProtocol;
+                while (true) {   
+                    dataReceive = new byte[1024];
+                    packetReceive = new DatagramPacket(dataReceive, dataReceive.length);
+                    data = new String(packetReceive.getData());
+                    codeProtocol = data.substring(0, LENGTHSERVERPROTOCOL);
+                    lastCodeProtocol = data.substring(data.lastIndexOf(codeProtocol, ))
+                    data = data.substring(LENGTHSERVERPROTOCOL);
+                    if(codeProtocol != "0x09"){
+                        connected = false;
+                    }
+                }
+            }
+        };
+    }
+
+    private void threadTime(Thread thread, int time) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    TimeUnit.SECONDS.sleep(time);
+                    thread.interrupt();
+                } catch (InterruptedException ex) {
+                    System.out.println("Fim de uma thread");
+                }
+            }
+        };
+        new Thread(runnable).start();
     }
 
     /**
@@ -217,5 +258,12 @@ public class Controller {
      */
     public void setRandomData(boolean randomData) {
         this.randomData = randomData;
+    }
+
+    /**
+     * @return the connected
+     */
+    public boolean isConnected() {
+        return connected;
     }
 }
