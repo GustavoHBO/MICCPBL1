@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import miccpbl1.client.device.controller.Controller;
@@ -63,6 +64,10 @@ public class ControllerView implements Initializable {
     /* Declaração dos CheckBox */
     @FXML
     private CheckBox checkBoxPatientRisk = null;
+    
+    /* Declaração do ComboBox */
+    @FXML
+    private ComboBox comboBoxPatient = null;
 
     /* Declaração dos TextField's */
     @FXML
@@ -96,29 +101,13 @@ public class ControllerView implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        setController(Controller.getController());
+        this.controller = Controller.getController();
     }
 
     @FXML
-    private void sendData() {
+    private void eventBtnSendData() {
 
-        try {
-            String pressure = getLabelPressure().getText();
-            String btmBeats = getLabelBeats().getText();
-            String movement = getLabelMovement().getText();
-            String patientRisk = getCheckBoxPatientRisk().selectedProperty().toString();
-            getController().updateStatusPatient(btmBeats, movement, pressure, patientRisk);
-        } catch (NullHeartBeatsException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InvalidHeartBeatsException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NullStatusMovementException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SocketException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DataInvalidException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        System.out.println(comboBoxPatient.getValue());
     }
 
     @FXML
@@ -147,6 +136,7 @@ public class ControllerView implements Initializable {
         pressure++;
         pressureString = pressure + pressureString.substring(pressureString.indexOf("/"));
         getLabelPressure().setText(pressureString);
+        controller.setRandomData(false);
     }
 
     @FXML
@@ -161,6 +151,7 @@ public class ControllerView implements Initializable {
             String pressureString = getLabelPressure().getText();
             pressureString = getTextFieldPressure().getText() + pressureString.substring(pressureString.indexOf("/"));
             getLabelPressure().setText(pressureString);
+            controller.setRandomData(false);
         }
     }
 
@@ -179,6 +170,7 @@ public class ControllerView implements Initializable {
         }
         pressureString = pressure + pressureString.substring(pressureString.indexOf("/"));
         getLabelPressure().setText(pressureString);
+        controller.setRandomData(false);
     }
 
     @FXML
@@ -194,6 +186,7 @@ public class ControllerView implements Initializable {
         pressure++;
         pressureString = pressureString.substring(0, pressureString.indexOf("/") + 1) + pressure;
         getLabelPressure().setText(pressureString);
+        controller.setRandomData(false);
     }
 
     @FXML
@@ -208,6 +201,7 @@ public class ControllerView implements Initializable {
             String pressureString = getLabelPressure().getText();
             pressureString = pressureString.substring(0, pressureString.indexOf("/") + 1) + textFieldPressureDia.getText();
             getLabelPressure().setText(pressureString);
+            controller.setRandomData(false);
         }
     }
 
@@ -226,6 +220,7 @@ public class ControllerView implements Initializable {
         }
         pressureString = pressureString.substring(0, pressureString.indexOf("/") + 1) + pressure;
         getLabelPressure().setText(pressureString);
+        controller.setRandomData(false);
     }
 
     @FXML
@@ -239,6 +234,7 @@ public class ControllerView implements Initializable {
         int beats = Integer.parseInt(getLabelBeats().getText());
         beats++;
         getLabelBeats().setText(Integer.toString(beats));
+        controller.setRandomData(false);
     }
 
     @FXML
@@ -253,10 +249,11 @@ public class ControllerView implements Initializable {
                 if (beats < 0) {
                     return;
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 return;
             }
             getLabelBeats().setText(getTextFieldBeats().getText());
+            controller.setRandomData(false);
         }
     }
 
@@ -273,6 +270,7 @@ public class ControllerView implements Initializable {
             beats--;
         }
         getLabelBeats().setText(Integer.toString(beats));
+        controller.setRandomData(false);
     }
 
     @FXML
@@ -289,6 +287,7 @@ public class ControllerView implements Initializable {
             } else {
                 getLabelMovement().setText("Em Movimento");
             }
+            controller.setRandomData(false);
         }
     }
 
@@ -315,8 +314,7 @@ public class ControllerView implements Initializable {
     @FXML
     private void eventBtnConnect() {
         try {
-            //controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
-            controller.connectionServer("127.0.0.1", "12345");
+            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
         } catch (IpServerInvalidException ex) {
             System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         } catch (UnknownHostException ex) {

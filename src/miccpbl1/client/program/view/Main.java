@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import miccpbl1.client.program.controller.Controller;
 
 public class Main extends Application {
 
@@ -24,6 +25,7 @@ public class Main extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.println(Controller.getInstance().receiveData());
         launch(args);
     }
 }

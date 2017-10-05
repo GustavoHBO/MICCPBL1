@@ -15,11 +15,11 @@ package miccpbl1.model;
 public class Paciente extends Pessoa {
 
     private String btCardiacos; // Batimentos cardiacos da pessoa por minuto.
-    private boolean repouso = true; // Identifica o estado de atividade do paciente.
+    private String repouso = "Em Repouso"; // Identifica o estado de atividade do paciente.
     private String pressaoSanguinea = null; // Pressão sanguínea do paciente.
     private boolean acEspecial = false; // Determina se o paciente necessita de um acompanhamento especial
 
-    public Paciente( String nome, String cpf, String numeroCelular) {
+    public Paciente( String cpf, String nome, String numeroCelular) {
         this.nome = nome;
         this.CPF= cpf;
         this.numero = numeroCelular;
@@ -69,7 +69,7 @@ public class Paciente extends Pessoa {
      * @return the repouso, true para repouso, false para exercendo alguma
      * atividade
      */
-    public boolean isRepouso() {
+    public String isRepouso() {
         return repouso;
     }
 
@@ -78,7 +78,7 @@ public class Paciente extends Pessoa {
      *
      * @param repouso the repouso to set
      */
-    public void setRepouso(boolean repouso) {
+    public void setRepouso(String repouso) {
         this.repouso = repouso;
     }
 

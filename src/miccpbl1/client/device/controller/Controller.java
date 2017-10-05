@@ -34,17 +34,19 @@ public class Controller {
     private String ipServer;
     private int portServer;
     private int rangeRefresh = 5;
-    private final int lengthServerProtocol = 4;
+    private final int LENGTHSERVERPROTOCOL = 4;
+    private final int LENGTHPROTOCOL = 2;
+    private final String CHARSPLIT = "!=";
 
     private DatagramSocket socketClient;
 
-    private boolean connected;
-    private boolean randomData = false;
+    private boolean connected = false;
+    private boolean randomData = true;
 
     private Thread thread;
     private Thread threadRefresh;
 
-    private ArrayList<Paciente> listPatient;
+    private Paciente patient;
 
     public static Controller getController() {
         if (controller == null) {
@@ -59,19 +61,6 @@ public class Controller {
 
     private void receiveData(String data) {
 
-    }
-
-    private int sendData(String data) throws SocketException, DataInvalidException {
-        DatagramSocket socketClient = new DatagramSocket();
-        InetAddress IPAddress;
-        if (data == null) {
-            throw new DataInvalidException();
-        } else if (data.trim().isEmpty()) {
-            throw new DataInvalidException();
-        } else {
-
-        }
-        return 0;
     }
 
     public void connectionServer(String ipServer, String portServer) throws SocketException, IpServerInvalidException, UnknownHostException, PortServerInvalidException, IOException {
@@ -115,24 +104,36 @@ public class Controller {
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         socketClient.receive(receivePacket);
                         data = new String(receivePacket.getData());
-                        if (!(data.length() > lengthServerProtocol * 2) || data.trim().isEmpty()) {
+                        if (!(data.length() > LENGTHSERVERPROTOCOL * 2) || data.trim().isEmpty()) {
                             return;
                         } else {
-                            System.out.println(new String(data.getBytes()));
-                            codeInit = data.substring(0, lengthServerProtocol);
+                            System.out.println(data);
+                            codeInit = data.substring(0, LENGTHSERVERPROTOCOL);
                             System.out.println(codeInit);
                             lastCodeIndex = data.lastIndexOf(codeInit);
                             if (lastCodeIndex == -1) {
                                 return;
                             }
                             System.out.println(lastCodeIndex);
-                            data = data.substring(lengthServerProtocol, lastCodeIndex);
+                            data = data.substring(LENGTHSERVERPROTOCOL, lastCodeIndex);
                             if (data.equals("testSucessful")) {
                                 System.out.println("Mensagem enviada e recebida corretamente");
                                 connected = true;
+
+                                try {
+                                    /*Código para testes*/
+
+                                    cadastrarPaciente("Jajá", "123456789", "010203");
+                                    updateRandom();
+                                } catch (SocketException | DataInvalidException | InterruptedException | NullHeartBeatsException | InvalidHeartBeatsException | NullStatusMovementException ex) {
+                                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+
+                            } else {
+                                connected = false;
                             }
                         }
-                        socketClient.close();
+
                     } catch (IOException ex) {
                         Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -145,55 +146,34 @@ public class Controller {
     }
 
     public void cadastrarPaciente(String nome, String cpf, String numero) throws SocketException, DataInvalidException {
-
+        patient = new Paciente(cpf, nome, numero);
         String data = "00";
         data += nome + "!-" + cpf + "!-" + numero + "00";
-        sendData(data);
+        sendDatagramPacket(data);
     }
 
-    public void updateStatusPatient(String btmCardiacos, String statusMovimento, String pressaoSanguinea, String patientRisk) throws NullHeartBeatsException, InvalidHeartBeatsException, NullStatusMovementException, SocketException, DataInvalidException {
-
-        String data = "01";
-        if (btmCardiacos == null) {
-            throw new NullHeartBeatsException();
-        } else if (btmCardiacos.trim().isEmpty()) {
-            throw new InvalidHeartBeatsException();
+    public void updateStatusPatient(String cpf, String btmCardiacos, String statusMovimento, String pressaoSanguinea, String patientRisk) throws NullHeartBeatsException, InvalidHeartBeatsException, NullStatusMovementException, SocketException, DataInvalidException {
+        if (patient == null) {
+            return;
+        } else {
+            String data = "01";
+            data += cpf + CHARSPLIT + btmCardiacos + CHARSPLIT + statusMovimento + CHARSPLIT + pressaoSanguinea + CHARSPLIT + patientRisk + "01";
+            sendDatagramPacket(data);
         }
-
-        if (statusMovimento == null) {
-            throw new NullStatusMovementException();
-        }
-        data += btmCardiacos + "!-" + statusMovimento + "!-" + pressaoSanguinea + "!-" + patientRisk + "01";
-        sendData(data);
     }
 
     public void updateRangeRefresh(String time) throws SocketException, DataInvalidException {
         String data = "02";
         data += time + "02";
-        sendData(data);
-    }
-
-    public boolean confirmationDataReceiverServer(String code) {
-        String dataReceived;
-
-        return true;
-    }
-
-    public void refreshData() {
-        Runnable runnable;
-        runnable = new Runnable() {
-            @Override
-            public void run() {
-                while (connected) {
-                    //connectionServer(ipServer, portServer);
-
-                }
-            }
-        };
+        sendDatagramPacket(data);
     }
 
     private void sendDatagramPacket(String data) {
+
         try {
+            if (socketClient.isClosed()) {
+                socketClient = new DatagramSocket();
+            }
             DatagramPacket sendPacket;
             byte[] sendData = data.getBytes();
             InetAddress address = InetAddress.getByName(this.ipServer);
@@ -204,53 +184,38 @@ public class Controller {
         }
     }
 
-    private Paciente findPacient(String cpf) {
-        Iterator<Paciente> it = listPatient.iterator();
-        Paciente findPacient;
-        while (it.hasNext()) {
-            findPacient = it.next();
-            if (findPacient.getCPF().equals(cpf)) {
-                return findPacient;
+    private void updateRandom() throws InterruptedException, NullHeartBeatsException, InvalidHeartBeatsException, NullStatusMovementException, SocketException, DataInvalidException {
+        Random random = new Random();
+        String btmCardiacos;
+        String statusMovimento;
+        String pressaoSanguinea;
+        String patientRisk;
+        String data;
+        while (randomData) {
+            btmCardiacos = Integer.toString(random.nextInt(131) + 30);
+            statusMovimento = random.nextBoolean() ? "Em Movimento" : "Em Repouso";
+            pressaoSanguinea = Integer.toString(random.nextInt(61) + 80) + "/" + Integer.toString(random.nextInt(61) + 60);
+            patientRisk = random.nextBoolean() ? "Risk" : "Not Risk";
+            try {
+                updateStatusPatient(patient.getCPF(), btmCardiacos, statusMovimento, pressaoSanguinea, patientRisk);
+                //this.wait(5 * 1000);
+            } catch (NullHeartBeatsException | InvalidHeartBeatsException | NullStatusMovementException | SocketException | DataInvalidException ex) {
+                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        return null;
     }
 
-    public void updateDataPatient(String cpf, String pressure, String beats, String movement, boolean acEspecial) {
-        Paciente pacient = findPacient(cpf);
-        if (pacient == null) {
+    /**
+     * @param rangeRefresh the rangeRefresh to set
+     */
+    public void setRangeRefresh(int rangeRefresh) {
+        this.rangeRefresh = rangeRefresh;
+    }
 
-        } else {
-            pacient.setPressaoSanguinea(pressure);
-            pacient.setBtCardiacos(beats);
-            pacient.setRepouso(movement.equals("Em Movimento"));
-            pacient.setAcEspecial(acEspecial);
-        }
-    }
-    
-    public void randomData(){
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                Iterator<Paciente> it = listPatient.iterator();
-                Random random = new Random();
-                Paciente patient;
-               while (randomData){
-                   if(!it.hasNext()){
-                       it = listPatient.iterator();
-                   }
-                   patient = it.next();
-                   patient.setAcEspecial(random.nextBoolean());
-                   patient.setBtCardiacos(Integer.toString(random.nextInt(200)));
-                   patient.setPressaoSanguinea(Integer.toString(random.nextInt(180))+ "/" + Integer.toString(random.nextInt(160)));
-                   patient.setRepouso(random.nextBoolean());
-               }
-            }
-        };
-        new Thread(run).start();
-    }
-    
-    public void refreshScreen(){
-        
+    /**
+     * @param randomData the randomData to set
+     */
+    public void setRandomData(boolean randomData) {
+        this.randomData = randomData;
     }
 }

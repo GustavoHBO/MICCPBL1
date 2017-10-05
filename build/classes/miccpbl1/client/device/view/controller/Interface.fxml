@@ -29,7 +29,7 @@
       <Button fx:id="btnDecreaseBeats" layoutX="322.0" layoutY="279.0" maxHeight="25.0" maxWidth="30.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventDecreaseBeats" prefHeight="25.0" prefWidth="30.0" text="-" />
       <Button fx:id="btnIncreaseBeats" layoutX="250.0" layoutY="279.0" maxHeight="20.0" maxWidth="20.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventIncreaseBeats" prefHeight="20.0" prefWidth="20.0" text="+" />
       <Button fx:id="btnSwitch" layoutX="425.0" layoutY="279.0" maxHeight="25.0" maxWidth="60.0" minHeight="25.0" minWidth="30.0" mnemonicParsing="false" onAction="#eventSwitchStatusMovement" prefHeight="25.0" prefWidth="60.0" text="Trocar" />
-      <Button fx:id="btnSend" layoutX="269.0" layoutY="441.0" mnemonicParsing="false" onAction="#sendData" text="Enviar" />
+      <Button fx:id="btnSend" layoutX="269.0" layoutY="441.0" mnemonicParsing="false" onAction="#eventBtnSend" text="Enviar" />
       <CheckBox fx:id="checkBoxPatientRisk" layoutX="232.0" layoutY="339.0" mnemonicParsing="false" text="Paciente de Risco" />
       <TextField fx:id="textFieldRangeRefresh" layoutX="324.0" layoutY="47.0" prefHeight="25.0" prefWidth="50.0" promptText="Taxa" />
       <Label layoutX="314.0" layoutY="25.0" text="Taxa de Atualização(s)" />

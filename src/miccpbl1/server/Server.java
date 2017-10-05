@@ -22,7 +22,7 @@ public class Server {
 
     private Controller controllerServer = null;
 
-    private int port = 12345;
+    private final int port = 12345;
 
     private final int lengthCodeProtocol = 2;
 
@@ -71,12 +71,12 @@ public class Server {
                             data = data.substring(lengthCodeProtocol, lastCodeIndex);
                             DatagramPacket sendPacket = null;
                             if (initCode.equals("00")) {
-                                try {
-                                    controllerServer.registerPacient(data);
-                                    System.out.println("Paciente Registrado!");
-                                } catch (PacientRegisteredException ex) {
-                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                                }
+
+                                //controllerServer.registerPacient(data);
+                                System.out.println("Paciente Registrado!");
+
+                            } else if (initCode.equals("01")) {
+                                System.out.println(data);
                             } else if (initCode.equals("09")) {
                                 System.out.println(data);
                                 sendDatagramPacket("0x09testSucessful0x09");
