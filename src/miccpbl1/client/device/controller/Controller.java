@@ -206,8 +206,8 @@ public class Controller {
             TimeUnit.SECONDS.sleep(rangeRefresh);
         }
     }
-    
-    private void testConnection (int time){
+
+    private void testConnection(int time) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -216,16 +216,28 @@ public class Controller {
                 sendDatagramPacket("09testConnection09");
                 String data;
                 String codeProtocol, lastCodeProtocol;
-                while (true) {   
+                int indexLastCode;
+                while (true) {
                     dataReceive = new byte[1024];
                     packetReceive = new DatagramPacket(dataReceive, dataReceive.length);
                     data = new String(packetReceive.getData());
                     codeProtocol = data.substring(0, LENGTHSERVERPROTOCOL);
-                    lastCodeProtocol = data.substring(data.lastIndexOf(codeProtocol, ))
-                    data = data.substring(LENGTHSERVERPROTOCOL);
-                    if(codeProtocol != "0x09"){
-                        connected = false;
+                    indexLastCode = data.lastIndexOf(codeProtocol);
+                    lastCodeProtocol = data.substring(indexLastCode, indexLastCode + LENGTHSERVERPROTOCOL);
+                    data = data.substring(0, indexLastCode);
+                    if (codeProtocol.equals(lastCodeProtocol)) {
+                        System.out.println(codeProtocol);
+                        System.out.println(data);
+                        if (codeProtocol == "0x09") {
+                            connected = true;
+                        } else if(codeProtocol == ""){
+                            
+                        }
+                    } else {
+                        System.out.println("A informação recebida tem códigos diferentes!");
+                        return;
                     }
+
                 }
             }
         };
