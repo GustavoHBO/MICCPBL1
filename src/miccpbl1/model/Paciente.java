@@ -5,6 +5,8 @@
  */
 package miccpbl1.model;
 
+import java.io.Serializable;
+
 /**
  * Classe Paciente e seus atributos
  *
@@ -12,7 +14,7 @@ package miccpbl1.model;
  * @since 19/09/2017
  *
  */
-public class Paciente extends Pessoa {
+public class Paciente extends Pessoa implements Serializable{
 
     private String btCardiacos; // Batimentos cardiacos da pessoa por minuto.
     private String repouso = "Em Repouso"; // Identifica o estado de atividade do paciente.
