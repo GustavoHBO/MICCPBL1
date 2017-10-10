@@ -7,7 +7,10 @@ package miccpbl1.client.program.view.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import miccpbl1.client.program.controller.Controller;
 
 /**
  * FXML Controller class
@@ -16,12 +19,22 @@ import javafx.fxml.Initializable;
  */
 public class ControllerView implements Initializable {
 
+    @FXML
+    private Button btnConectt = null;
+    
+    Controller controller;
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        controller = Controller.getInstance();
     }    
     
+    @FXML
+    private void eventBtnConect(){
+        controller.testConection("127.0.0.1", 12345);
+    }
 }

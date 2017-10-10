@@ -8,8 +8,6 @@ package miccpbl1.client.device.view.controller;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -64,10 +62,6 @@ public class ControllerView implements Initializable {
     /* Declaração dos CheckBox */
     @FXML
     private CheckBox checkBoxPatientRisk = null;
-    
-    /* Declaração do ComboBox */
-    @FXML
-    private ComboBox comboBoxPatient = null;
 
     /* Declaração dos TextField's */
     @FXML
@@ -82,6 +76,12 @@ public class ControllerView implements Initializable {
     private TextField textFieldPressureDia = null;
     @FXML
     private TextField textFieldBeats = null;
+    @FXML
+    private TextField textFieldNome = null;
+    @FXML
+    private TextField textFieldCpf = null;
+    @FXML
+    private TextField textFieldNumero = null;
 
     /* Declaração dos Label */
     @FXML
@@ -98,16 +98,13 @@ public class ControllerView implements Initializable {
 
     /**
      * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.controller = Controller.getController();
-    }
-
-    @FXML
-    private void eventBtnSendData() {
-
-        System.out.println(comboBoxPatient.getValue());
     }
 
     @FXML
@@ -116,9 +113,7 @@ public class ControllerView implements Initializable {
         try {
             String rangeRefresh = getTextFieldRangeRefresh().getText();
             getController().updateRangeRefresh(rangeRefresh);
-        } catch (SocketException ex) {
-            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DataInvalidException ex) {
+        } catch (SocketException | DataInvalidException ex) {
             Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -314,27 +309,50 @@ public class ControllerView implements Initializable {
     @FXML
     private void eventBtnConnect() {
         try {
-            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
-            if(controller.isConnected()){
+            //controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
+            controller.connectionServer("127.0.0.1", "12345", textFieldNome.getText(), textFieldCpf.getText(), textFieldNumero.getText());
+
+            if (controller.isConnected()) {
                 labelStatusConection.setText("Conectado");
                 labelStatusConection.setDisable(false);
-            } else{
+            } else {
                 labelStatusConection.setText("Desconectado");
+                labelStatusConection.setDisable(true);
             }
-        } catch (IpServerInvalidException ex) {
-            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
-        } catch (UnknownHostException ex) {
-            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
-        } catch (PortServerInvalidException ex) {
-            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
-        } catch (IOException ex) {
+        } catch (IpServerInvalidException | PortServerInvalidException | IOException ex) {
             System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
         }
     }
 
     @FXML
     private void eventBtnSend() {
-        
+
+        try {
+            controller.updateStatusPatient(labelBeats.getText(), labelMovement.getText(), labelPressure.getText());
+        } catch (NullHeartBeatsException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InvalidHeartBeatsException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullStatusMovementException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SocketException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DataInvalidException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void eventBtnAlterar() {
+        String time = textFieldRangeRefresh.getText();
+        if (time == null) {
+            return;
+        } else if (time.trim().isEmpty() || !time.matches("\\d+")) {
+            return;
+        } else {
+            controller.setRangeRefresh(Integer.parseInt(time));
+        }
     }
 
     /**

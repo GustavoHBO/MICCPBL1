@@ -6,6 +6,7 @@
 package miccpbl1.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Classe Paciente e seus atributos
@@ -16,89 +17,75 @@ import java.io.Serializable;
  */
 public class Paciente extends Pessoa implements Serializable{
 
-    private String btCardiacos; // Batimentos cardiacos da pessoa por minuto.
-    private String repouso = "Em Repouso"; // Identifica o estado de atividade do paciente.
-    private String pressaoSanguinea = null; // Pressão sanguínea do paciente.
-    private boolean acEspecial = false; // Determina se o paciente necessita de um acompanhamento especial
+    private ArrayList<String> listBtCardiacos; // Batimentos cardiacos da pessoa por minuto.
+    private ArrayList<String> listRepouso; // Identifica o estado de atividade do paciente.
+    private ArrayList<String> listPressaoSanguinea; // Pressão sanguínea do paciente.
+    private ArrayList<String> listAcEspecial; // Determina se o paciente necessita de um acompanhamento especial
 
     public Paciente( String cpf, String nome, String numeroCelular) {
         this.nome = nome;
         this.CPF= cpf;
         this.numero = numeroCelular;
+        
+        listBtCardiacos = new ArrayList<String>();
+        listRepouso = new ArrayList<String>();
+        listPressaoSanguinea = new ArrayList<String>();
+        listAcEspecial = new ArrayList<String>();
     }
 
     /**
-     * Retorna true para paciente que necessita de acompanhamento especial,
-     * false para caso não precise.
-     *
-     * @return the acEspecial
+     * @return the listBtCardiacos
      */
-    public boolean isAcEspecial() {
-        return acEspecial;
+    public ArrayList<String> getListBtCardiacos() {
+        return listBtCardiacos;
     }
 
     /**
-     * Altera a condição de acompanhamento do paciente, true para acompanhamento
-     * especial, false para acompanhamento normal.
-     *
-     * @param acEspecial the acEspecial to set
+     * @param listBtCardiacos the listBtCardiacos to set
      */
-    public void setAcEspecial(boolean acEspecial) {
-        this.acEspecial = acEspecial;
+    public void setListBtCardiacos(ArrayList<String> listBtCardiacos) {
+        this.listBtCardiacos = listBtCardiacos;
     }
 
     /**
-     * Retorna a quantidade de batimentos cardíacos do paciente.
-     *
-     * @return the btCardiacos
+     * @return the listRepouso
      */
-    public String getBtCardiacos() {
-        return btCardiacos;
+    public ArrayList<String> getListRepouso() {
+        return listRepouso;
     }
 
     /**
-     * Altera a quantidade de batimentos cardíacos do paciente.
-     *
-     * @param btCardiacos the btCardiacos to set
+     * @param listRepouso the listRepouso to set
      */
-    public void setBtCardiacos(String btCardiacos) {
-        this.btCardiacos = btCardiacos;
+    public void setListRepouso(ArrayList<String> listRepouso) {
+        this.listRepouso = listRepouso;
     }
 
     /**
-     * Retorna o estado do paciente
-     *
-     * @return the repouso, true para repouso, false para exercendo alguma
-     * atividade
+     * @return the listPressaoSanguinea
      */
-    public String isRepouso() {
-        return repouso;
+    public ArrayList<String> getListPressaoSanguinea() {
+        return listPressaoSanguinea;
     }
 
     /**
-     * Altera o estado de repouso do paciente
-     *
-     * @param repouso the repouso to set
+     * @param listPressaoSanguinea the listPressaoSanguinea to set
      */
-    public void setRepouso(String repouso) {
-        this.repouso = repouso;
+    public void setListPressaoSanguinea(ArrayList<String> listPressaoSanguinea) {
+        this.listPressaoSanguinea = listPressaoSanguinea;
     }
 
     /**
-     * Retorna a pressão sanguínea do paciente
-     *
-     * @return the pressaoSanguinea
+     * @return the listAcEspecial
      */
-    public String getPressaoSanguinea() {
-        return pressaoSanguinea;
+    public ArrayList<String> getListAcEspecial() {
+        return listAcEspecial;
     }
 
     /**
-     * Altera a pressão sanguínea do paciente.
-     *
-     * @param pressaoSanguinea the pressaoSanguinea to set
+     * @param listAcEspecial the listAcEspecial to set
      */
-    public void setPressaoSanguinea(String pressaoSanguinea) {
-        this.pressaoSanguinea = pressaoSanguinea;
+    public void setListAcEspecial(ArrayList<String> listAcEspecial) {
+        this.listAcEspecial = listAcEspecial;
     }
 }

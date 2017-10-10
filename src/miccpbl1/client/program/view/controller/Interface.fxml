@@ -8,13 +8,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="500.0" maxWidth="1200.0" minHeight="500.0" minWidth="1200.0" pickOnBounds="false" prefHeight="500.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpbl1.client.device.view.controller.ControllerView">
+<AnchorPane id="AnchorPane" maxHeight="500.0" maxWidth="1200.0" minHeight="500.0" minWidth="1200.0" pickOnBounds="false" prefHeight="500.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpbl1.client.program.view.controller.ControllerView">
    <children>
       <TextField fx:id="textFieldIpServer" layoutX="88.0" layoutY="21.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite o IP do Servidor" />
       <TextField fx:id="textFieldPortServer" layoutX="88.0" layoutY="60.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite a Porta do Servidor" />
       <Label layoutX="63.0" layoutY="26.0" text="IP:" />
       <Label layoutX="41.0" layoutY="65.0" text="Porta:" />
-      <Button fx:id="btnConect" layoutX="291.0" layoutY="60.0" mnemonicParsing="false" onAction="#eventBtnConnect" text="Conectar" />
+      <Button fx:id="btnConectt" layoutX="291.0" layoutY="60.0" mnemonicParsing="false" onAction="#eventBtnConect" text="Conectar" />
       <Label fx:id="labelStatusConection" disable="true" layoutX="280.0" layoutY="39.0" prefHeight="15.0" prefWidth="100.0" text="Desconectado" textAlignment="CENTER" wrapText="true" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="106.0" layoutX="97.0" layoutY="167.0" stroke="BLACK" strokeType="INSIDE" width="106.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="100.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />

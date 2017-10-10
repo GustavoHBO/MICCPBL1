@@ -11,7 +11,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import miccpbl1.client.device.view.exceptions.PacientRegisteredException;
 import miccpbl1.server.controller.Controller;
 
 /**
@@ -50,6 +49,7 @@ public class Server {
             try {
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
+                
                 Runnable run;
                 run = new Runnable() {
                     @Override
@@ -64,20 +64,22 @@ public class Server {
                         if (lastCodeIndex == 0) {
                             return;
                         }
-                        String endCode = data.substring(lastCodeIndex, lastCodeIndex + 2);
+                        String endCode = data.substring(lastCodeIndex, lastCodeIndex + lengthCodeProtocol);
                         if (!initCode.equals(endCode)) {
                             return;
                         } else {
                             data = data.substring(lengthCodeProtocol, lastCodeIndex);
-                            DatagramPacket sendPacket = null;
                             if (initCode.equals("00")) {
-
-                                //controllerServer.registerPacient(data);
                                 System.out.println("Paciente Registrado!");
-
-                            } else if (initCode.equals("01")) {
                                 System.out.println(data);
+                                controllerServer.registerPacient(data);
+                                
+                            } else if (initCode.equals("01")) {
+                                System.out.println("Atualizando dados do Paciente");
+                                System.out.println(data);
+                                controllerServer.refreshStatusPacient(data);
                             } else if (initCode.equals("09")) {
+                                System.out.println("Testando Conexão");
                                 System.out.println(data);
                                 sendDatagramPacket("0x09testSucessful0x09");
                             }

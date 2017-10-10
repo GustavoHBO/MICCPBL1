@@ -11,13 +11,10 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import miccpbl1.client.device.view.exceptions.ConnectionLostException;
 import miccpbl1.client.device.view.exceptions.DataInvalidException;
 import miccpbl1.client.device.view.exceptions.InvalidHeartBeatsException;
 import miccpbl1.client.device.view.exceptions.IpServerInvalidException;
@@ -65,7 +62,7 @@ public class Controller {
 
     }
 
-    public void connectionServer(String ipServer, String portServer) throws SocketException, IpServerInvalidException, UnknownHostException, PortServerInvalidException, IOException {
+    public void connectionServer(String ipServer, String portServer, String nome, String cpf, String numero) throws SocketException, IpServerInvalidException, UnknownHostException, PortServerInvalidException, IOException {
         socketClient = new DatagramSocket();
         InetAddress ipAddress;
         int port;
@@ -82,6 +79,7 @@ public class Controller {
         } else if (portServer.trim().isEmpty() || !portServer.matches("\\d{4}\\d?")) {
             throw new PortServerInvalidException();
         } else {
+
             ipAddress = InetAddress.getByName(ipServer);
             sendData = "09testeConnection09".getBytes();
             port = Integer.parseInt(portServer);
@@ -98,14 +96,13 @@ public class Controller {
                 public void run() {
                     try {
                         String data;
-                        //DatagramSocket socketClient = new DatagramSocket();
                         byte[] receiveData = new byte[1024];
                         String codeInit;
                         int lastCodeIndex;
-
                         DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                         socketClient.receive(receivePacket);
                         data = new String(receivePacket.getData());
+                        System.out.println("Recebendo:" + new String(receivePacket.getData()));
                         if (!(data.length() > LENGTHSERVERPROTOCOL * 2) || data.trim().isEmpty()) {
                             return;
                         } else {
@@ -123,9 +120,8 @@ public class Controller {
                                 connected = true;
 
                                 try {
-                                    /*Código para testes*/
 
-                                    cadastrarPaciente("Jajá", "123456789", "010203");
+                                    cadastrarPaciente(nome, cpf, numero);
                                     updateRandom();
                                 } catch (SocketException | DataInvalidException | InterruptedException | NullHeartBeatsException | InvalidHeartBeatsException | NullStatusMovementException ex) {
                                     Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -141,8 +137,10 @@ public class Controller {
                     }
                 }
             };
-            this.thread = new Thread(run);
-            thread.start();
+            if (thread == null) {
+                this.thread = new Thread(run);
+                thread.start();
+            }
         }
 
     }
@@ -150,16 +148,16 @@ public class Controller {
     public void cadastrarPaciente(String nome, String cpf, String numero) throws SocketException, DataInvalidException {
         patient = new Paciente(cpf, nome, numero);
         String data = "00";
-        data += nome + "!-" + cpf + "!-" + numero + "00";
+        data += nome + CHARSPLIT + cpf + CHARSPLIT + numero + "00";
         sendDatagramPacket(data);
     }
 
-    public void updateStatusPatient(String cpf, String btmCardiacos, String statusMovimento, String pressaoSanguinea, String patientRisk) throws NullHeartBeatsException, InvalidHeartBeatsException, NullStatusMovementException, SocketException, DataInvalidException {
+    public void updateStatusPatient(String btmCardiacos, String statusMovimento, String pressaoSanguinea) throws NullHeartBeatsException, InvalidHeartBeatsException, NullStatusMovementException, SocketException, DataInvalidException {
         if (patient == null) {
             return;
         } else {
             String data = "01";
-            data += cpf + CHARSPLIT + btmCardiacos + CHARSPLIT + statusMovimento + CHARSPLIT + pressaoSanguinea + CHARSPLIT + patientRisk + "01";
+            data += patient.getCPF() + CHARSPLIT + btmCardiacos + CHARSPLIT + statusMovimento + CHARSPLIT + pressaoSanguinea + "01";
             sendDatagramPacket(data);
         }
     }
@@ -173,13 +171,21 @@ public class Controller {
     private void sendDatagramPacket(String data) {
 
         try {
+            if (socketClient == null) {
+                socketClient = new DatagramSocket();
+            }
             if (socketClient.isClosed()) {
                 socketClient = new DatagramSocket();
             }
+            if (!connected) {
+                return;
+            }
             DatagramPacket sendPacket;
             byte[] sendData = data.getBytes();
+            this.ipServer = "127.0.0.1";
+            this.portServer = 12345;
             InetAddress address = InetAddress.getByName(this.ipServer);
-            sendPacket = new DatagramPacket(sendData, sendData.length, address, portServer);
+            sendPacket = new DatagramPacket(sendData, sendData.length, address, this.portServer);
             socketClient.send(sendPacket);
         } catch (IOException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -199,7 +205,7 @@ public class Controller {
             pressaoSanguinea = Integer.toString(random.nextInt(61) + 80) + "/" + Integer.toString(random.nextInt(61) + 60);
             patientRisk = random.nextBoolean() ? "Risk" : "Not Risk";
             try {
-                updateStatusPatient(patient.getCPF(), btmCardiacos, statusMovimento, pressaoSanguinea, patientRisk);
+                updateStatusPatient(btmCardiacos, statusMovimento, pressaoSanguinea);
             } catch (NullHeartBeatsException | InvalidHeartBeatsException | NullStatusMovementException | SocketException | DataInvalidException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -207,7 +213,7 @@ public class Controller {
         }
     }
 
-    private void testConnection(int time) {
+    public void testConnection(int time) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -217,7 +223,7 @@ public class Controller {
                 String data;
                 String codeProtocol, lastCodeProtocol;
                 int indexLastCode;
-                while (true) {
+                do {
                     dataReceive = new byte[1024];
                     packetReceive = new DatagramPacket(dataReceive, dataReceive.length);
                     data = new String(packetReceive.getData());
@@ -230,17 +236,20 @@ public class Controller {
                         System.out.println(data);
                         if (codeProtocol == "0x09") {
                             connected = true;
-                        } else if(codeProtocol == ""){
-                            
+                        } else {
+                            connected = false;
                         }
                     } else {
                         System.out.println("A informação recebida tem códigos diferentes!");
                         return;
                     }
 
-                }
+                } while (connected);
             }
         };
+        Thread threadRun = new Thread(runnable);
+        threadRun.start();
+        threadTime(threadRun, time);
     }
 
     private void threadTime(Thread thread, int time) {
@@ -250,18 +259,24 @@ public class Controller {
                 try {
                     TimeUnit.SECONDS.sleep(time);
                     thread.interrupt();
-                } catch (InterruptedException ex) {
                     System.out.println("Fim de uma thread");
+                } catch (InterruptedException ex) {
+                    System.out.println("A thread não foi encerrada");
                 }
             }
         };
-        new Thread(runnable).start();
+        Thread threadRun;
+        threadRun = new Thread(runnable);
+        thread.start();
     }
 
     /**
      * @param rangeRefresh the rangeRefresh to set
      */
     public void setRangeRefresh(int rangeRefresh) {
+        if (rangeRefresh < 1) {
+            return;
+        }
         this.rangeRefresh = rangeRefresh;
     }
 
