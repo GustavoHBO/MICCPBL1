@@ -154,4 +154,24 @@ public class Controller implements Serializable {
         }
         return null;
     }
+
+    public String mountListPatient() {
+        String listPat;
+        listPat = "0x08";
+        Paciente pat;
+        Iterator<Paciente> it = listaPacientes.iterator();
+        while(it.hasNext()){
+            pat = it.next();
+            listPat+=pat.getCPF();
+            listPat+= TOKENSEPARATOR;
+            listPat+=pat.getNome();
+            listPat+= TOKENSEPARATOR;
+            listPat+=pat.getNumero();
+            if(it.hasNext()){
+                listPat+= TOKENSEPARATOR;
+            }
+        }
+        listPat += "0x08";
+        return listPat;
+    }
 }

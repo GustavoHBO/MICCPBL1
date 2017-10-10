@@ -49,7 +49,7 @@ public class Server {
             try {
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
                 serverSocket.receive(receivePacket);
-                
+
                 Runnable run;
                 run = new Runnable() {
                     @Override
@@ -73,11 +73,14 @@ public class Server {
                                 System.out.println("Paciente Registrado!");
                                 System.out.println(data);
                                 controllerServer.registerPacient(data);
-                                
+
                             } else if (initCode.equals("01")) {
                                 System.out.println("Atualizando dados do Paciente");
                                 System.out.println(data);
                                 controllerServer.refreshStatusPacient(data);
+                            } else if (initCode.equals("08")) {
+                                String stri = controllerServer.mountListPatient();
+                                sendDatagramPacket(stri);
                             } else if (initCode.equals("09")) {
                                 System.out.println("Testando Conexão");
                                 System.out.println(data);
