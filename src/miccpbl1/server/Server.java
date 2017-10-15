@@ -42,7 +42,6 @@ public class Server {
     private void startServer() throws SocketException {
         controllerServer = Controller.getController();
         serverSocket = new DatagramSocket(port);
-
         receiveData = new byte[1024];
 
         while (true) {
@@ -69,22 +68,28 @@ public class Server {
                             return;
                         } else {
                             data = data.substring(lengthCodeProtocol, lastCodeIndex);
-                            if (initCode.equals("00")) {
-                                System.out.println("Paciente Registrado!");
-                                System.out.println(data);
-                                controllerServer.registerPacient(data);
-
-                            } else if (initCode.equals("01")) {
-                                System.out.println("Atualizando dados do Paciente");
-                                System.out.println(data);
-                                controllerServer.refreshStatusPacient(data);
-                            } else if (initCode.equals("08")) {
-                                String stri = controllerServer.mountListPatient();
-                                sendDatagramPacket(stri);
-                            } else if (initCode.equals("09")) {
-                                System.out.println("Testando Conexão");
-                                System.out.println(data);
-                                sendDatagramPacket("0x09testSucessful0x09");
+                            switch (initCode) {
+                                case "00":
+                                    System.out.println("Paciente Registrado!");
+                                    System.out.println(data);
+                                    controllerServer.registerPacient(data);
+                                    break;
+                                case "01":
+                                    System.out.println("Atualizando dados do Paciente");
+                                    System.out.println(data);
+                                    controllerServer.refreshStatusPacient(data);
+                                    break;
+                                case "08":
+                                    String stri = controllerServer.mountListPatient();
+                                    sendDatagramPacket(stri);
+                                    break;
+                                case "09":
+                                    System.out.println("Testando Conexão");
+                                    System.out.println(data);
+                                    sendDatagramPacket("0x09testSucessful0x09");
+                                    break;
+                                default:
+                                    break;
                             }
                         }
                     }

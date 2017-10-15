@@ -11,8 +11,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import miccpbl1.client.device.view.exceptions.IpServerInvalidException;
-import miccpbl1.client.device.view.exceptions.PortServerInvalidException;
+import miccpbl1.client.exceptions.IpServerInvalidException;
+import miccpbl1.client.exceptions.PortServerInvalidException;
 
 /**
  *

@@ -10,11 +10,11 @@
 
 <AnchorPane id="AnchorPane" maxHeight="500.0" maxWidth="1200.0" minHeight="500.0" minWidth="1200.0" pickOnBounds="false" prefHeight="500.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpblmedico.FXMLDocumentController">
    <children>
-      <TextField fx:id="textFieldIpServer" layoutX="88.0" layoutY="21.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite o IP do Servidor" />
-      <TextField fx:id="textFieldPortServer" layoutX="88.0" layoutY="60.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite a Porta do Servidor" />
+      <TextField fx:id="textFieldIp" layoutX="88.0" layoutY="21.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite o IP do Servidor" />
+      <TextField fx:id="textFieldPort" layoutX="88.0" layoutY="60.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite a Porta do Servidor" />
       <Label layoutX="63.0" layoutY="26.0" text="IP:" />
       <Label layoutX="41.0" layoutY="65.0" text="Porta:" />
-      <Label fx:id="labelStatusConection" disable="true" layoutX="280.0" layoutY="39.0" prefHeight="15.0" prefWidth="100.0" text="Desconectado" textAlignment="CENTER" wrapText="true" />
+      <Label fx:id="labelStatusConnection" alignment="CENTER" disable="true" layoutX="280.0" layoutY="39.0" prefHeight="15.0" prefWidth="100.0" text="Desconectado" textAlignment="CENTER" wrapText="true" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="106.0" layoutX="97.0" layoutY="167.0" stroke="BLACK" strokeType="INSIDE" width="106.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="100.0" layoutX="100.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="106.0" layoutX="247.0" layoutY="167.0" stroke="BLACK" strokeType="INSIDE" width="106.0" />
@@ -27,13 +27,13 @@
       <Label fx:id="labelPressure" alignment="CENTER" contentDisplay="CENTER" layoutX="112.0" layoutY="177.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
       <Label fx:id="labelBeats" alignment="CENTER" contentDisplay="CENTER" layoutX="261.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
       <Label fx:id="labelMovement" layoutX="412.0" layoutY="179.0" prefHeight="82.0" prefWidth="77.0" text="Sem Paciente" textAlignment="CENTER" wrapText="true" />
-      <TableView layoutX="567.0" layoutY="33.0" prefHeight="200.0" prefWidth="616.0" tableMenuButtonVisible="true">
+      <TableView fx:id="tableRisk" layoutX="567.0" layoutY="33.0" prefHeight="200.0" prefWidth="616.0" tableMenuButtonVisible="true">
         <columns>
-          <TableColumn editable="false" prefWidth="169.0" resizable="false" text="Nome" />
-          <TableColumn editable="false" prefWidth="94.0" resizable="false" text="CPF" />
-            <TableColumn editable="false" prefWidth="129.0" resizable="false" text="Batimentos" />
-            <TableColumn editable="false" prefWidth="100.0" resizable="false" text="Pressão" />
-            <TableColumn editable="false" prefWidth="123.0" resizable="false" text="Movimento" />
+          <TableColumn fx:id="tableColumnNameRisk" editable="false" prefWidth="169.0" resizable="false" text="Nome" />
+          <TableColumn fx:id="tableColumnCpfRisk" editable="false" prefWidth="94.0" resizable="false" text="CPF" />
+            <TableColumn fx:id="tableColumnBeatsRisk" editable="false" prefWidth="129.0" resizable="false" text="Batimentos" />
+            <TableColumn fx:id="tableColumnPressureRisk" editable="false" prefWidth="100.0" resizable="false" text="Pressão" />
+            <TableColumn fx:id="tableColumnMovementRisk" editable="false" prefWidth="123.0" resizable="false" text="Movimento" />
         </columns>
          <columnResizePolicy>
          </columnResizePolicy>
@@ -60,16 +60,27 @@
             </Lighting>
          </effect>
       </Label>
-      <TableView layoutX="567.0" layoutY="283.0" prefHeight="200.0" prefWidth="616.0" tableMenuButtonVisible="true">
+      <TableView fx:id="tablePatient" layoutX="567.0" layoutY="283.0" prefHeight="200.0" prefWidth="616.0" tableMenuButtonVisible="true">
          <columns>
-            <TableColumn editable="false" prefWidth="169.0" resizable="false" text="Nome" />
-            <TableColumn editable="false" prefWidth="94.0" resizable="false" text="CPF" />
-            <TableColumn editable="false" prefWidth="129.0" resizable="false" text="Batimentos" />
-            <TableColumn editable="false" prefWidth="100.0" resizable="false" text="Pressão" />
-            <TableColumn editable="false" prefWidth="123.0" resizable="false" text="Movimento" />
+            <TableColumn fx:id="tableColumnNamePatientsDoctor" editable="false" prefWidth="169.0" resizable="false" text="Nome" />
+            <TableColumn fx:id="tableColumnCpfPatientsDoctor" editable="false" prefWidth="94.0" resizable="false" text="CPF" />
+            <TableColumn fx:id="tableColumnBeatsPatientsDoctor" editable="false" prefWidth="129.0" resizable="false" text="Batimentos" />
+            <TableColumn fx:id="tableColumnPressurePatientsDoctor" editable="false" prefWidth="100.0" resizable="false" text="Pressão" />
+            <TableColumn fx:id="tableColumnMovementPatientsDoctor" editable="false" prefWidth="123.0" resizable="false" text="Movimento" />
          </columns>
          <columnResizePolicy>
          </columnResizePolicy>
+      </TableView>
+      <Button fx:id="btnConnect" layoutX="294.0" layoutY="60.0" mnemonicParsing="false" onAction="#eventBtnConnect" text="Connect" />
+      <TextField fx:id="textFieldNome" layoutX="39.0" layoutY="98.0" prefHeight="25.0" prefWidth="167.0" promptText="Nome" />
+      <TextField fx:id="textFieldCpf" layoutX="210.0" layoutY="98.0" prefHeight="25.0" prefWidth="140.0" promptText="CPF" />
+      <TextField fx:id="textFieldNumero" layoutX="353.0" layoutY="98.0" prefHeight="25.0" prefWidth="140.0" promptText="Numero" />
+      <TextField fx:id="textFieldCrm" layoutX="376.0" layoutY="59.0" prefHeight="25.0" prefWidth="116.0" promptText="CRM" />
+      <TableView fx:id="tablePatients" layoutX="100.0" layoutY="317.0" prefHeight="144.0" prefWidth="399.0" tableMenuButtonVisible="true">
+        <columns>
+          <TableColumn fx:id="tableColumnNamePatients" prefWidth="236.0" text="Nome" />
+          <TableColumn fx:id="tableColumnCpfPatients" prefWidth="162.0" text="CPF" />
+        </columns>
       </TableView>
    </children>
 </AnchorPane>

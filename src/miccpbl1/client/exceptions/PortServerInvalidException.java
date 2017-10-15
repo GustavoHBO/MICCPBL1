@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package miccpbl1.client.device.view.exceptions;
+package miccpbl1.client.exceptions;
 
 /**
  *
  * @author gustavo
  */
-public class DatagramPacketReceivedException extends Exception{
+public class PortServerInvalidException extends Exception{
     
 }

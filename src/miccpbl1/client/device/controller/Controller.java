@@ -15,12 +15,12 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import miccpbl1.client.device.view.exceptions.DataInvalidException;
-import miccpbl1.client.device.view.exceptions.InvalidHeartBeatsException;
-import miccpbl1.client.device.view.exceptions.IpServerInvalidException;
-import miccpbl1.client.device.view.exceptions.NullHeartBeatsException;
-import miccpbl1.client.device.view.exceptions.NullStatusMovementException;
-import miccpbl1.client.device.view.exceptions.PortServerInvalidException;
+import miccpbl1.client.exceptions.DataInvalidException;
+import miccpbl1.client.exceptions.InvalidHeartBeatsException;
+import miccpbl1.client.exceptions.IpServerInvalidException;
+import miccpbl1.client.exceptions.NullHeartBeatsException;
+import miccpbl1.client.exceptions.NullStatusMovementException;
+import miccpbl1.client.exceptions.PortServerInvalidException;
 import miccpbl1.model.Paciente;
 
 /**
@@ -137,10 +137,10 @@ public class Controller {
                     }
                 }
             };
-            if (thread == null) {
-                this.thread = new Thread(run);
-                thread.start();
-            }
+//            if (thread == null) {
+//                this.thread = new Thread(run);
+//                thread.start();
+//            }
         }
 
     }

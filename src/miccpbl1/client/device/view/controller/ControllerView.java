@@ -20,12 +20,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javax.swing.JOptionPane;
 import miccpbl1.client.device.controller.Controller;
-import miccpbl1.client.device.view.exceptions.DataInvalidException;
-import miccpbl1.client.device.view.exceptions.InvalidHeartBeatsException;
-import miccpbl1.client.device.view.exceptions.IpServerInvalidException;
-import miccpbl1.client.device.view.exceptions.NullHeartBeatsException;
-import miccpbl1.client.device.view.exceptions.NullStatusMovementException;
-import miccpbl1.client.device.view.exceptions.PortServerInvalidException;
+import miccpbl1.client.exceptions.DataInvalidException;
+import miccpbl1.client.exceptions.InvalidHeartBeatsException;
+import miccpbl1.client.exceptions.IpServerInvalidException;
+import miccpbl1.client.exceptions.NullHeartBeatsException;
+import miccpbl1.client.exceptions.NullStatusMovementException;
+import miccpbl1.client.exceptions.PortServerInvalidException;
 
 /**
  * FXML Controller class

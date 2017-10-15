@@ -12,7 +12,7 @@ import miccpbl1.model.Medico;
 import miccpbl1.model.Paciente;
 
 /**
- *
+ *  Classe de controle das conexoes do servidor
  * @author gustavo
  */
 public class Controller implements Serializable {
