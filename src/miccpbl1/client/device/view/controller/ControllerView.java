@@ -16,9 +16,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javax.swing.JOptionPane;
 import miccpbl1.client.device.controller.Controller;
 import miccpbl1.client.device.view.exceptions.DataInvalidException;
 import miccpbl1.client.device.view.exceptions.InvalidHeartBeatsException;
@@ -309,9 +309,11 @@ public class ControllerView implements Initializable {
     @FXML
     private void eventBtnConnect() {
         try {
-            //controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
-            controller.connectionServer("127.0.0.1", "12345", textFieldNome.getText(), textFieldCpf.getText(), textFieldNumero.getText());
-
+            if(textFieldNome.getText().trim().isEmpty() || textFieldCpf.getText().trim().isEmpty() || textFieldNumero.getText().trim().isEmpty()){
+                JOptionPane.showMessageDialog(null, "Insira os dados corretamente!");
+                return;
+            }
+            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText(), textFieldNome.getText(), textFieldCpf.getText(), textFieldNumero.getText());
             if (controller.isConnected()) {
                 labelStatusConection.setText("Conectado");
                 labelStatusConection.setDisable(false);
@@ -320,7 +322,7 @@ public class ControllerView implements Initializable {
                 labelStatusConection.setDisable(true);
             }
         } catch (IpServerInvalidException | PortServerInvalidException | IOException ex) {
-            System.out.println("miccpbl1.client.device.view.controller.ControllerView.eventBtnConnect()");
+            JOptionPane.showMessageDialog(null, "Ip ou Porta Inválida!");
         }
     }
 
