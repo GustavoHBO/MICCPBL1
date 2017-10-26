@@ -279,7 +279,7 @@ public class Controller implements Serializable {
         if (listServers.isEmpty()) {
             return null;
         }
-        serverData = listServers.get(0).split(TOKENSEPARATOR);
+        serverData = listServers.get(0).split(TOKENSEPARATOR);//Divide the string in a array.
 
         vx = Integer.parseInt(serverData[0]); // Get the cordenate in x.
         vy = Integer.parseInt(serverData[1]); // Get the cordenate in y.
