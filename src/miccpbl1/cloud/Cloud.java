@@ -96,6 +96,11 @@ public class Cloud {
                                     System.out.println(data);
                                     sendDatagramPacket("0x09testSucessful0x09");
                                     break;
+                                case "S0":
+                                    System.out.println("Cadastrando Servidor");
+                                    int value = controllerServer.registerServer(data);
+                                    sendDatagramPacket("0xS0" + value + "0xS0");
+                                    break;
                                 default:
                                     break;
                             }
