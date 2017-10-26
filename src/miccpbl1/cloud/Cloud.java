@@ -9,12 +9,9 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import miccpbl1.cloud.controller.Controller;
-import miccpbl1.model.Medico;
-import miccpbl1.model.Paciente;
 
 /**
  *
