@@ -50,7 +50,7 @@ public class Controller {
         controller = null;
     }
 
-    public Controller() {
+    private Controller() {
         this.listPatient = new ArrayList<Paciente>();
     }
 

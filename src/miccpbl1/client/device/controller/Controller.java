@@ -118,15 +118,12 @@ public class Controller {
                             if (data.equals("testSucessful")) {
                                 System.out.println("Mensagem enviada e recebida corretamente");
                                 connected = true;
-
                                 try {
-
                                     cadastrarPaciente(nome, cpf, numero);
                                     updateRandom();
                                 } catch (SocketException | DataInvalidException | InterruptedException | NullHeartBeatsException | InvalidHeartBeatsException | NullStatusMovementException ex) {
                                     Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                                 }
-
                             } else {
                                 connected = false;
                             }
@@ -137,10 +134,10 @@ public class Controller {
                     }
                 }
             };
-//            if (thread == null) {
-//                this.thread = new Thread(run);
-//                thread.start();
-//            }
+            if (thread == null) {
+                this.thread = new Thread(run);
+                thread.start();
+            }
         }
 
     }
@@ -214,6 +211,11 @@ public class Controller {
     }
 
     public void testConnection(int time) {
+        try {
+            socketClient = new DatagramSocket();
+        } catch (SocketException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
