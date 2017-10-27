@@ -62,7 +62,7 @@ public class Controller {
 
     }
 
-    public void connectionServer(String ipServer, String portServer, String nome, String cpf, String numero) throws SocketException, IpServerInvalidException, UnknownHostException, PortServerInvalidException, IOException {
+    public void connectionServer(String ipServer, String portServer) throws SocketException, IpServerInvalidException, UnknownHostException, PortServerInvalidException, IOException {
         socketClient = new DatagramSocket();
         InetAddress ipAddress;
         int port;
@@ -119,7 +119,7 @@ public class Controller {
                                 System.out.println("Mensagem enviada e recebida corretamente");
                                 connected = true;
                                 try {
-                                    cadastrarPaciente(nome, cpf, numero);
+                                    //cadastrarPaciente(nome, cpf, numero, senha);
                                     updateRandom();
                                 } catch (SocketException | DataInvalidException | InterruptedException | NullHeartBeatsException | InvalidHeartBeatsException | NullStatusMovementException ex) {
                                     Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -142,10 +142,10 @@ public class Controller {
 
     }
 
-    public void cadastrarPaciente(String nome, String cpf, String numero) throws SocketException, DataInvalidException {
+    public void cadastrarPaciente(String nome, String cpf, String numero, String senha) throws SocketException{
         patient = new Paciente(cpf, nome, numero);
         String data = "00";
-        data += nome + CHARSPLIT + cpf + CHARSPLIT + numero + "00";
+        data += nome + CHARSPLIT + cpf + CHARSPLIT + numero + CHARSPLIT + senha + "00";
         sendDatagramPacket(data);
     }
 

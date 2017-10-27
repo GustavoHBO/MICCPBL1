@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="500.0" maxWidth="1200.0" minHeight="500.0" minWidth="1200.0" pickOnBounds="false" prefHeight="500.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpblmedico.FXMLDocumentController">
+<AnchorPane id="AnchorPane" maxHeight="500.0" maxWidth="1200.0" minHeight="500.0" minWidth="1200.0" pickOnBounds="false" prefHeight="500.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpbl1.client.program.view.controller.FXMLDocumentController">
    <children>
       <TextField fx:id="textFieldIp" layoutX="88.0" layoutY="21.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite o IP do Servidor" />
       <TextField fx:id="textFieldPort" layoutX="88.0" layoutY="60.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite a Porta do Servidor" />

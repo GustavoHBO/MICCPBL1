@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import miccpbl1.model.Medico;
 import miccpbl1.model.Paciente;
-import miccpbl1.server.Server;
 
 /**
  * Class of control the connections between the servers and clients. Storage too
@@ -21,16 +20,17 @@ import miccpbl1.server.Server;
 public class Controller implements Serializable {
 
     private final String TOKENSEPARATOR = "!=";
-    private final int LENGTHSERVERPROTOCOL = 4;
-    private final int LENGTHPROTOCOL = 2;
 
     private static Controller controller = null;
     private final ArrayList<Paciente> listaPacientes = new ArrayList<>();
     private final ArrayList<Medico> listDoctor = new ArrayList<>();
     private final ArrayList<String> listServers = new ArrayList<>();
 
+    /*_______________________________________________________________________________________________________________*/
+
     /**
      * Singleton getController
+     *
      * @return controller - Current controller instance.
      */
     public static Controller getController() {
@@ -40,6 +40,8 @@ public class Controller implements Serializable {
         return controller;
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Reset the controller
      */
@@ -47,8 +49,11 @@ public class Controller implements Serializable {
         controller = null;
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Register the patient on cloud.
+     *
      * @param data - Data about the patient.
      */
     public void registerPacient(String data) {
@@ -74,20 +79,31 @@ public class Controller implements Serializable {
 
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Register the server on cloud.
+     *
      * @param data - Data with ip and location of server.
+     * @return -1 - Case the parameter data is wrong, 0 - Case exist server with same ip, 1 - Case the server have been registered.
      */
-    public void registerServer(String data) {
+    public int registerServer(String data) {
         if (data == null) {
-            return;
+            return -1;
         } else if (data.trim().isEmpty()) {
-            return;
+            return -1;
         } else {
-            listServers.add(data);//The data will come formated.
+            String ip = splitString(data, TOKENSEPARATOR)[2];
+            if(findServer(ip) == null){
+                listServers.add(data);//The data will come formated.
+                return 1;
+            }
         }
+        return 0;
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Method for update the status of patient, these case, if the data is
      * received, then the patient is in risk.
@@ -108,8 +124,11 @@ public class Controller implements Serializable {
         }
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Search the patient registered using the cpf as parameter.
+     *
      * @param cpf - Identifier of patient.
      * @return patient - Case exist patient, null case not.
      */
@@ -125,8 +144,11 @@ public class Controller implements Serializable {
         return null;
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Method for split the string received.
+     *
      * @param string - String.
      * @param splitString - String separator.
      * @return string - String divided.
@@ -135,8 +157,11 @@ public class Controller implements Serializable {
         return string.split(splitString);// Use the method java.
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Return string with the data of patients that are on string received.
+     *
      * @param patients - Cpf's of patients.
      * @return string - String with the patients chosen.
      */
@@ -165,8 +190,11 @@ public class Controller implements Serializable {
         return data;
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Search the doctor using the cpf.
+     *
      * @param cpf - Identifier of doctor.
      * @return doctor - Case exist, null - Case not exist.
      */
@@ -182,8 +210,35 @@ public class Controller implements Serializable {
         return null;
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    
+    /**
+     * Find the server by ip.
+     * @param ip - Ip server.
+     * @return dataServer - Data about the server.
+     */
+    public String findServer(String ip) {
+        String dataServer;
+        String[] ipServer;
+        Iterator<String> it = listServers.iterator();
+        if (ip == null || ip.trim().isEmpty()) {
+            return null;
+        }
+        while(it.hasNext()){
+            dataServer = it.next();
+            ipServer = splitString(dataServer, TOKENSEPARATOR);
+            if(ipServer[2].equals(ip)){
+                return dataServer;
+            }
+        }
+        return null;
+    }
+
+    /*_______________________________________________________________________________________________________________*/
+    
     /**
      * Mount the list with all data of patients
+     *
      * @return string - Data of all the patients.
      */
     public String mountListPatient() {
@@ -205,32 +260,36 @@ public class Controller implements Serializable {
         listPat += "0x08";
         return listPat;
     }
+
+    /*_______________________________________________________________________________________________________________*/
     
     /**
-     * Return the ip of server based on distance. Calculate with relation with triangle.
+     * Return the ip of server based on distance. Calculate with relation with
+     * triangle.
+     *
      * @param x - Position in x.
      * @param y - Position in y.
      * @return ip - Ip of server, null - Case not exist server.
      */
-    public String getIpServeByLocation(int x, int y){
+    public String getIpServeByLocation(int x, int y) {
         String ip;
         String[] serverData;
         Iterator<String> it = listServers.iterator();
         int vx, vy, dist;
-        if(listServers.isEmpty()){
+        if (listServers.isEmpty()) {
             return null;
         }
         serverData = listServers.get(0).split(TOKENSEPARATOR);
-        
+
         vx = Integer.parseInt(serverData[0]); // Get the cordenate in x.
         vy = Integer.parseInt(serverData[1]); // Get the cordenate in y.
         ip = serverData[2];//It get the first ip, because the first is the more close.
-        dist = vx*vx +vy*vy;// Use baskara for calculate the distance, use the relation of triangle.
-        while(it.hasNext()){                                
+        dist = vx * vx + vy * vy;// Use baskara for calculate the distance, use the relation of triangle.
+        while (it.hasNext()) {
             serverData = it.next().split(TOKENSEPARATOR);
             vx = Integer.parseInt(serverData[0]); // Get the cordenate in x.
             vy = Integer.parseInt(serverData[1]); // Get the cordenate in y.
-            if(dist > vx*vx +vy*vy){
+            if (dist > vx * vx + vy * vy) {
                 ip = serverData[2];
             }
         }

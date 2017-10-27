@@ -313,7 +313,7 @@ public class ControllerView implements Initializable {
                 JOptionPane.showMessageDialog(null, "Insira os dados corretamente!");
                 return;
             }
-            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText(), textFieldNome.getText(), textFieldCpf.getText(), textFieldNumero.getText());
+            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
             if (controller.isConnected()) {
                 labelStatusConection.setText("Conectado");
                 labelStatusConection.setDisable(false);
