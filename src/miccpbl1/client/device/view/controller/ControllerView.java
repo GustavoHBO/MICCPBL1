@@ -34,7 +34,7 @@ import miccpbl1.client.exceptions.PortServerInvalidException;
  */
 public class ControllerView implements Initializable {
 
-    /* Declaração dos botões da interface */
+    /* Statement the buttons */
     @FXML
     private Button btnRangeRefresh = null;
     @FXML
@@ -59,11 +59,11 @@ public class ControllerView implements Initializable {
     private Button btnRandomMovement = null;
 
 
-    /* Declaração dos CheckBox */
+    /* Statement the CheckBox */
     @FXML
     private CheckBox checkBoxPatientRisk = null;
 
-    /* Declaração dos TextField's */
+    /* Statement the TextField's */
     @FXML
     private TextField textFieldIpServer = null;
     @FXML
@@ -83,7 +83,7 @@ public class ControllerView implements Initializable {
     @FXML
     private TextField textFieldNumero = null;
 
-    /* Declaração dos Label */
+    /* Statement the Label */
     @FXML
     private Label labelStatusConection = null;
     @FXML
@@ -93,7 +93,7 @@ public class ControllerView implements Initializable {
     @FXML
     private Label labelMovement = null;
 
-    /* Declaração do controller */
+    /* Statement the Controller */
     private Controller controller = null;
 
     /**
@@ -107,6 +107,9 @@ public class ControllerView implements Initializable {
         this.controller = Controller.getController();
     }
 
+    /** Event the button rangeRefresh.
+    *
+    **/
     @FXML
     private void eventUpdateRangeRefresh() {
 

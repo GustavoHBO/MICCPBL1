@@ -26,11 +26,14 @@ import miccpbl1.client.exceptions.DataInvalidException;
  */
 public class LoginController implements Initializable {
 
+    /* Statement the Controller */
     private Controller controller = null;
 
+    /* Statement the Pane */
     @FXML
     private Pane paneRegister = null;
 
+    /* Statement the TextField */
     @FXML
     private TextField textFieldCpf = null;
     @FXML
@@ -46,6 +49,7 @@ public class LoginController implements Initializable {
     @FXML
     private TextField textFieldPassAgain = null;
 
+    /* Statement the Button */
     @FXML
     private Button buttonConnect = null;
     @FXML
@@ -55,6 +59,7 @@ public class LoginController implements Initializable {
     @FXML
     private Button buttonCancel = null;
 
+    /* Statement the Label */
     @FXML
     private Label labelErrorRegister = null;
     @FXML
@@ -68,14 +73,27 @@ public class LoginController implements Initializable {
         // TODO
     }
 
+    /**
+    *  Event for the button register on pane Login.
+    *
+    **/
     public void eventButtonRegisterLogin() {
         paneRegister.setVisible(true);
     }
 
+    /**
+    *  Event for the button cancel on pane Login. Close the pane register and back to pane login.
+    *
+    **/
     public void eventButtonCancel() {
         paneRegister.setVisible(false);
     }
 
+    /**
+    *  Event for the button register on pane register. Verify the fields and show the possible error. Case
+    *  the fields are correct, the register is done.
+    *
+    **/
     public void eventButtonRegister() {
         if (textFieldName.getText().trim().isEmpty()) {
             labelErrorRegister.setText("ERROR: Digite o campo nome corretamente!");
