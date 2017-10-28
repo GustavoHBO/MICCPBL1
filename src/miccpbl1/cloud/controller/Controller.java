@@ -271,25 +271,25 @@ public class Controller implements Serializable {
      * @param y - Position in y.
      * @return ip - Ip of server, null - Case not exist server.
      */
-    public String getIpServeByLocation(int x, int y) {
+    public String getIpServerByLocation(int x, int y) {
         String ip;
         String[] serverData;
         Iterator<String> it = listServers.iterator();
-        int vx, vy, dist;
+        double vx, vy, dist;
         if (listServers.isEmpty()) {
             return null;
         }
-        serverData = listServers.get(0).split(TOKENSEPARATOR);
+        serverData = listServers.get(0).split(TOKENSEPARATOR);//Divide the string in a array.
 
         vx = Integer.parseInt(serverData[0]); // Get the cordenate in x.
         vy = Integer.parseInt(serverData[1]); // Get the cordenate in y.
         ip = serverData[2];//It get the first ip, because the first is the more close.
-        dist = vx * vx + vy * vy;// Use baskara for calculate the distance, use the relation of triangle.
+        dist = Math.sqrt(vx * vx + vy * vy);// Use baskara for calculate the distance, use the relation of triangle.
         while (it.hasNext()) {
             serverData = it.next().split(TOKENSEPARATOR);
             vx = Integer.parseInt(serverData[0]); // Get the cordenate in x.
             vy = Integer.parseInt(serverData[1]); // Get the cordenate in y.
-            if (dist > vx * vx + vy * vy) {
+            if (dist > Math.sqrt(vx * vx + vy * vy)) {
                 ip = serverData[2];
             }
         }
