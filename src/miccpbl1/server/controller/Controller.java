@@ -5,6 +5,9 @@
  */
 package miccpbl1.server.controller;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +15,8 @@ import miccpbl1.model.Medico;
 import miccpbl1.model.Paciente;
 
 /**
- *  Classe de controle das conexoes do servidor
+ * Classe de controle das conexoes do servidor
+ *
  * @author gustavo
  */
 public class Controller implements Serializable {
@@ -20,6 +24,9 @@ public class Controller implements Serializable {
     private final String TOKENSEPARATOR = "!=";
     private final int LENGTHSERVERPROTOCOL = 4;
     private final int LENGTHPROTOCOL = 2;
+    
+    private int posX;
+    private int posY;
 
     private static Controller controller = null;
     private final ArrayList<Paciente> listaPacientes = new ArrayList<>();
@@ -64,6 +71,36 @@ public class Controller implements Serializable {
             return;
         }
 
+    }
+
+    /**
+     * This method registers these server on cloud, sending the IP, Port, Position X and Position Y. This method ask some
+     * data using the prompt.
+     * @return dataSend - If the data inserted are valid, null - In case of an error in reading the input data.
+     */
+    public String mountDataRegisterCloud() {
+        /* Now, the server will send a packet to cloud for register the ip */
+        String ipCloud, dataSend = null; // This will contains the ip.
+        int portCloud; // This will contains the port.
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));// IOS - For read in terminal the ip and port of the cloud.
+        try {
+            System.out.println("Bem-Vindo!");
+            String input;
+            do {
+                System.out.println("\nDigite o IP do servidor Cloud!");
+                input = inFromUser.readLine();
+            } while (!input.matches("\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}"));
+            dataSend = "S0" + input + TOKENSEPARATOR;
+            input = "";
+            do {
+                System.out.println("\nDigite a PORTA do servidor Cloud!");
+                input = inFromUser.readLine();
+            } while (!input.matches("\\d{4}\\d?"));
+            dataSend += input + TOKENSEPARATOR + getPosX()+ TOKENSEPARATOR + getPosY() +"S0";
+        } catch (IOException ex) {
+            System.out.println("ERROR: Impossível ler os dados de entrada!");
+        }
+        return dataSend;
     }
 
     public void refreshStatusPacient(String data) {
@@ -162,18 +199,46 @@ public class Controller implements Serializable {
         listPat = "0x08";
         Paciente pat;
         Iterator<Paciente> it = listaPacientes.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             pat = it.next();
-            listPat+=pat.getCPF();
-            listPat+= TOKENSEPARATOR;
-            listPat+=pat.getNome();
-            listPat+= TOKENSEPARATOR;
-            listPat+=pat.getNumero();
-            if(it.hasNext()){
-                listPat+= TOKENSEPARATOR;
+            listPat += pat.getCPF();
+            listPat += TOKENSEPARATOR;
+            listPat += pat.getNome();
+            listPat += TOKENSEPARATOR;
+            listPat += pat.getNumero();
+            if (it.hasNext()) {
+                listPat += TOKENSEPARATOR;
             }
         }
         listPat += "0x08";
         return listPat;
+    }
+
+    /**
+     * @return the posX
+     */
+    public int getPosX() {
+        return posX;
+    }
+
+    /**
+     * @param posX the posX to set
+     */
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    /**
+     * @return the posY
+     */
+    public int getPosY() {
+        return posY;
+    }
+
+    /**
+     * @param posY the posY to set
+     */
+    public void setPosY(int posY) {
+        this.posY = posY;
     }
 }

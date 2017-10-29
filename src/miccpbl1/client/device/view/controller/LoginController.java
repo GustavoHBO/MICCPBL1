@@ -181,7 +181,7 @@ public class LoginController implements Initializable {
                 reply = controller.replyServer();
                 System.out.println(reply);
                 if (reply.trim().isEmpty()) {
-                    labelError.setText("ERROR: Usuário ou Senha inválido!");
+                    labelError.setText("ERROR: Usuario ou Senha invalido!");
                     labelError.setVisible(true);
                 } else {
                     String[] person = reply.split(controller.getCHARSPLIT());

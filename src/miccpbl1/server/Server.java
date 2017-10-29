@@ -23,7 +23,8 @@ public class Server {
 
     private final int port = 12345;
 
-    private final int lengthCodeProtocol = 2;
+    private final int LENGTHCODEPROTOCOL = 2;
+    private final int LENGTHCODEPROTOCOLSERVER = 4;
 
     private DatagramSocket serverSocket = null;
     private DatagramPacket receivePacket = null;
@@ -44,6 +45,9 @@ public class Server {
         serverSocket = new DatagramSocket(port);
         receiveData = new byte[1024];
 
+        /* Now, the server will send a packet to cloud for register the server*/
+        sendDatagramPacket(controllerServer.mountDataRegisterCloud());
+        
         while (true) {
             try {
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -58,16 +62,16 @@ public class Server {
                     }
 
                     private void identifyAction(String data) {
-                        String initCode = data.substring(0, lengthCodeProtocol);
+                        String initCode = data.substring(0, LENGTHCODEPROTOCOL);
                         int lastCodeIndex = data.lastIndexOf(initCode);
                         if (lastCodeIndex == 0) {
                             return;
                         }
-                        String endCode = data.substring(lastCodeIndex, lastCodeIndex + lengthCodeProtocol);
+                        String endCode = data.substring(lastCodeIndex, lastCodeIndex + LENGTHCODEPROTOCOL);
                         if (!initCode.equals(endCode)) {
                             return;
                         } else {
-                            data = data.substring(lengthCodeProtocol, lastCodeIndex);
+                            data = data.substring(LENGTHCODEPROTOCOL, lastCodeIndex);
                             switch (initCode) {
                                 case "00":
                                     System.out.println("Paciente Registrado!");
@@ -110,5 +114,31 @@ public class Server {
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public String replyServer() {
+        byte[] dataReceive;
+        DatagramPacket packetReceive;
+        String data = null;
+        String codeProtocol, lastCodeProtocol;
+        int indexLastCode;
+
+        dataReceive = new byte[1024];
+        packetReceive = new DatagramPacket(dataReceive, dataReceive.length);
+        try {
+            serverSocket.receive(packetReceive);//To await the reply of server.
+            data = new String(packetReceive.getData());// Convert the data bytes for char.
+            codeProtocol = data.substring(0, LENGTHCODEPROTOCOLSERVER);// Get the code of protocol.
+            data = data.substring(LENGTHCODEPROTOCOLSERVER);// Cut the first code.
+            indexLastCode = data.lastIndexOf(codeProtocol);// Get the last index of code.
+            lastCodeProtocol = data.substring(indexLastCode, indexLastCode + LENGTHCODEPROTOCOLSERVER);// Get the last code.
+            data = data.substring(0, indexLastCode);// Now data have only the data
+            if (!codeProtocol.equals(lastCodeProtocol)) {// If the protocol is wrong the data is discarded.
+                data = null;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);// Logger default
+        }
+        return data;
     }
 }
