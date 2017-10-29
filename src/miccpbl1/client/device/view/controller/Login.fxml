@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="500.0" style="-fx-background-color: #379DFF;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpbl1.client.device.view.controller.LoginController">
+<AnchorPane id="AnchorPane" prefHeight="342.0" prefWidth="500.0" style="-fx-background-color: #379DFF;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="miccpbl1.client.device.view.controller.LoginController">
    <children>
       <Label layoutX="110.0" layoutY="82.0" text="CPF:" textAlignment="CENTER">
          <font>
@@ -21,10 +21,11 @@
       </Label>
       <TextField fx:id="textFieldCpf" layoutX="194.0" layoutY="84.0" promptText="CPF" />
       <PasswordField fx:id="textFieldPassword" cacheHint="ROTATE" layoutX="194.0" layoutY="116.0" promptText="Senha" />
-      <Button fx:id="buttonConnect" layoutX="194.0" layoutY="165.0" mnemonicParsing="false" text="Conectar" />
+      <Button fx:id="buttonConnect" layoutX="194.0" layoutY="165.0" mnemonicParsing="false" onAction="#eventButtonConnect" text="Conectar" />
       <Button fx:id="buttonRegister" layoutX="283.0" layoutY="165.0" mnemonicParsing="false" onAction="#eventButtonRegisterLogin" text="Cadastrar" />
-      <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="22.0" layoutY="371.0" prefHeight="15.0" prefWidth="455.0" textFill="RED" />
-      <Pane fx:id="paneRegister" prefHeight="400.0" prefWidth="500.0" style="-fx-background-color: #379DFF;">
+      <Label fx:id="labelError" alignment="CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="371.0" prefHeight="15.0" prefWidth="455.0" textFill="RED" visible="false" />
+      <Button fx:id="buttonConfig" layoutX="14.0" layoutY="359.0" mnemonicParsing="false" onAction="#eventButtonConfig" text="Configurações" />
+      <Pane fx:id="paneRegister" prefHeight="400.0" prefWidth="500.0" style="-fx-background-color: #379DFF;" visible="false">
          <children>
             <Label layoutX="33.0" layoutY="50.0" text="Nome:">
                <font>
@@ -58,5 +59,15 @@
                </font></Label>
             <Button fx:id="buttonCancel" layoutX="260.0" layoutY="248.0" mnemonicParsing="false" onAction="#eventButtonCancel" text="Cancelar" />
          </children></Pane>
+      <Pane fx:id="paneConfig" layoutX="22.0" layoutY="225.0" onMouseExited="#eventButtonConfig" prefHeight="122.0" prefWidth="455.0" style="-fx-background-color: #FFFFFF;" visible="false">
+         <children>
+            <Button fx:id="buttonConnectServer" layoutX="343.0" layoutY="61.0" mnemonicParsing="false" onAction="#eventButtonConnectPaneConfig" text="Conectar" />
+            <Label fx:id="labelStatusConnection" disable="true" layoutX="331.0" layoutY="39.0" prefHeight="15.0" prefWidth="100.0" text="Desconectado" textAlignment="CENTER" wrapText="true" />
+            <Label layoutX="22.0" layoutY="66.0" text="Porta:" />
+            <Label layoutX="45.0" layoutY="32.0" text="IP:" />
+            <TextField fx:id="textFieldPortServer" layoutX="71.0" layoutY="61.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite a Porta do Servidor" />
+            <TextField fx:id="textFieldIpServer" layoutX="71.0" layoutY="27.0" prefHeight="25.0" prefWidth="185.0" promptText="Digite o IP do Servidor" />
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

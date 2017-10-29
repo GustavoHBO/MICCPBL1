@@ -60,14 +60,20 @@ public class Controller implements Serializable {
         String nome;
         String cpf;
         String numero;
+        String senha;
 
         Paciente paciente;
         String[] splitData = data.split(TOKENSEPARATOR);
 
-        nome = splitData[0];
-        cpf = splitData[1];
+        if(splitData.length < 4){
+            return;
+        }
+        
+        cpf = splitData[0];
+        nome = splitData[1];
         numero = splitData[2];
-        paciente = new Paciente(nome, cpf, numero);
+        senha = splitData[3];
+        paciente = new Paciente(nome, cpf, numero, senha);
 
         if (findPacient(cpf) == null) {
             System.out.println("Cadastrando Paciente");
@@ -294,5 +300,21 @@ public class Controller implements Serializable {
             }
         }
         return ip;
+    }
+    
+    /**
+     * This method returns the person using the cpf and password registered.
+     * @param cpf - Identification the patient.
+     * @param senha - Password the patient.
+     * @return person - If the patient exist and the cpf and password are correct, null - Otherwise.
+     */
+    public String personConnect(String cpf, String senha){
+        Paciente patient = findPacient(cpf);
+        if(patient == null){
+            return "0x030x03";
+        } else if (patient.getSenha().equals(senha)){
+            return "0x03" + patient.getCPF() + TOKENSEPARATOR + patient.getNome() + TOKENSEPARATOR + patient.getNumero() + "0x03";
+        }
+        return "0x030x03";
     }
 }

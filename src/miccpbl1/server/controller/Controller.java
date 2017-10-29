@@ -45,14 +45,16 @@ public class Controller implements Serializable {
         String nome;
         String cpf;
         String numero;
+        String senha;
 
         Paciente paciente;
         String[] splitData = data.split(TOKENSEPARATOR);
 
-        nome = splitData[0];
-        cpf = splitData[1];
+        cpf = splitData[0];
+        nome = splitData[1];
         numero = splitData[2];
-        paciente = new Paciente(nome, cpf, numero);
+        senha = splitData[3];
+        paciente = new Paciente(cpf, nome, numero, senha);
 
         if (findPacient(cpf) == null) {
             System.out.println("Cadastrando Paciente");

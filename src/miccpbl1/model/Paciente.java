@@ -22,10 +22,11 @@ public class Paciente extends Pessoa implements Serializable{
     private ArrayList<String> listPressaoSanguinea; // Pressão sanguínea do paciente.
     private ArrayList<String> listAcEspecial; // Determina se o paciente necessita de um acompanhamento especial
 
-    public Paciente( String cpf, String nome, String numeroCelular) {
+    public Paciente( String cpf, String nome, String numeroCelular, String senha) {
         this.nome = nome;
         this.CPF= cpf;
         this.numero = numeroCelular;
+        this.senha = senha;
         
         listBtCardiacos = new ArrayList<String>();
         listRepouso = new ArrayList<String>();

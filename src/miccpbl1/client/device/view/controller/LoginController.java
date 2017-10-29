@@ -8,8 +8,6 @@ package miccpbl1.client.device.view.controller;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -17,7 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import miccpbl1.client.device.controller.Controller;
-import miccpbl1.client.exceptions.DataInvalidException;
+import miccpbl1.model.Pessoa;
 
 /**
  * FXML Controller class
@@ -32,6 +30,8 @@ public class LoginController implements Initializable {
     /* Statement the Pane */
     @FXML
     private Pane paneRegister = null;
+    @FXML
+    private Pane paneConfig = null;
 
     /* Statement the TextField */
     @FXML
@@ -48,6 +48,10 @@ public class LoginController implements Initializable {
     private TextField textFieldPass = null;
     @FXML
     private TextField textFieldPassAgain = null;
+    @FXML
+    private TextField textFieldPortServer = null;
+    @FXML
+    private TextField textFieldIpServer = null;
 
     /* Statement the Button */
     @FXML
@@ -58,47 +62,59 @@ public class LoginController implements Initializable {
     private Button buttonRegisterAccount = null;
     @FXML
     private Button buttonCancel = null;
+    @FXML
+    private Button buttonConfig = null;
+    @FXML
+    private Button buttonConnectServer = null;
 
     /* Statement the Label */
     @FXML
     private Label labelErrorRegister = null;
     @FXML
     private Label labelError = null;
-
+    @FXML
+    private Label labelStatusConnection = null;
+    
+    /* Statement class Pessoa */
+    private Pessoa pessoa = null;
     /**
      * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        controller = Controller.getController();
     }
 
     /**
-    *  Event for the button register on pane Login.
-    *
-    **/
+     * Event for the button register on pane Login.
+     */
     public void eventButtonRegisterLogin() {
+        paneConfig.setVisible(false);
         paneRegister.setVisible(true);
     }
 
     /**
-    *  Event for the button cancel on pane Login. Close the pane register and back to pane login.
-    *
-    **/
+     * Event for the button cancel on pane Login. Close the pane register and
+     * back to pane login.
+     */
     public void eventButtonCancel() {
         paneRegister.setVisible(false);
     }
 
     /**
-    *  Event for the button register on pane register. Verify the fields and show the possible error. Case
-    *  the fields are correct, the register is done.
-    *
-    **/
+     * Event for the button register on pane register. Verify the fields and
+     * show the possible error. Case the fields are correct, the register is
+     * done.
+     */
     public void eventButtonRegister() {
+
         if (textFieldName.getText().trim().isEmpty()) {
             labelErrorRegister.setText("ERROR: Digite o campo nome corretamente!");
             labelErrorRegister.setVisible(true);
-        } else if (textFieldCpf.getText().trim().isEmpty()) {
+        } else if (textFieldCpfRegister.getText().trim().isEmpty()) {
             labelErrorRegister.setText("ERROR: Digite o campo CPF corretamente!");
             labelErrorRegister.setVisible(true);
         } else if (textFieldNumber.getText().trim().isEmpty()) {
@@ -119,5 +135,67 @@ public class LoginController implements Initializable {
                 labelErrorRegister.setVisible(true);
             }
         }
+    }
+
+    /**
+     * Event for the setting button. Show the pane of config connection.
+     */
+    public void eventButtonConfig() {
+        if (paneConfig.isVisible()) {
+            paneConfig.setVisible(false);
+        } else {
+            paneConfig.setVisible(true);
+        }
+    }
+
+    /**
+     * Event for test the connection with server.
+     */
+    public void eventButtonConnectPaneConfig() {
+        boolean connect = controller.testConnection();
+        if (connect) {
+            labelStatusConnection.setText("Conectado");
+            labelStatusConnection.setDisable(false);
+        }else{
+            labelStatusConnection.setText("Desconectado");
+            labelStatusConnection.setDisable(true);
+        }
+    }
+    
+    /**
+     * Event for obtains
+     */
+    public void eventButtonConnect(){
+        String cpf, senha;
+        cpf = textFieldCpf.getText();
+        senha = textFieldPassword.getText();
+        if(cpf.trim().isEmpty() || senha.trim().isEmpty()){
+            return;
+        }
+        
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                String reply;
+                controller.connectAccount(cpf, senha);
+                reply = controller.replyServer();
+                System.out.println(reply);
+                if (reply.trim().isEmpty()) {
+                    labelError.setText("ERROR: Usuário ou Senha inválido!");
+                    labelError.setVisible(true);
+                } else {
+                    String[] person = reply.split(controller.getCHARSPLIT());
+                    if (person.length < 3) {// If the reply is wrong.
+                        return;
+                    }
+                    pessoa = new Pessoa();
+                    pessoa.setCPF(person[0]);
+                    pessoa.setNome(person[1]);
+                    pessoa.setNumero(person[2]);
+                }
+            }
+        };
+        Thread thread = new Thread(run);
+        thread.start();
     }
 }

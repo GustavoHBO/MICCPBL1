@@ -18,6 +18,8 @@ import miccpbl1.cloud.controller.Controller;
  * @author gustavo
  */
 public class Cloud {
+    
+    private final String TOKENSEPARATOR = "!=";
 
     private Controller controllerServer = null;
 
@@ -86,6 +88,11 @@ public class Cloud {
                                     System.out.println("Atualizando dados do Paciente");
                                     System.out.println(data);
                                     controllerServer.refreshStatusPacient(data);
+                                    break;
+                                case "03":
+                                    System.out.println("Conectando o cliente!");
+                                    String[] dataPatient = data.split(TOKENSEPARATOR);
+                                    sendDatagramPacket(controllerServer.personConnect(dataPatient[0], dataPatient[1]));
                                     break;
                                 case "08":
                                     String stri = controllerServer.mountListPatient();

@@ -6,6 +6,7 @@
 package miccpbl1.client.device.controller;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -21,17 +22,17 @@ import miccpbl1.client.exceptions.IpServerInvalidException;
 import miccpbl1.client.exceptions.NullHeartBeatsException;
 import miccpbl1.client.exceptions.NullStatusMovementException;
 import miccpbl1.client.exceptions.PortServerInvalidException;
-import miccpbl1.model.Paciente;
+import miccpbl1.model.Pessoa;
 
 /**
  *
  * @author gustavo
  */
-public class Controller {
+public class Controller implements Serializable {
 
     private static Controller controller;
-    private String ipServer;
-    private int portServer;
+    private String ipServer = "127.0.0.1";
+    private int portServer = 12345;
     private int rangeRefresh = 5;
     private final int LENGTHSERVERPROTOCOL = 4;
     private final int LENGTHPROTOCOL = 2;
@@ -40,12 +41,13 @@ public class Controller {
     private DatagramSocket socketClient;
 
     private boolean connected = false;
+    private boolean connectedAccount = false;
     private boolean randomData = true;
 
     private Thread thread;
     private Thread threadRefresh;
 
-    private Paciente patient;
+    private Pessoa pessoa;
 
     public static Controller getController() {
         if (controller == null) {
@@ -58,6 +60,11 @@ public class Controller {
         controller = null;
     }
 
+    private Controller() {
+    }
+
+    ;
+    
     private void receiveData(String data) {
 
     }
@@ -142,19 +149,22 @@ public class Controller {
 
     }
 
-    public void cadastrarPaciente(String nome, String cpf, String numero, String senha) throws SocketException{
-        patient = new Paciente(cpf, nome, numero);
+    public void cadastrarPaciente(String nome, String cpf, String numero, String senha) throws SocketException {
+        pessoa = new Pessoa();
+        pessoa.setNome(nome);
+        pessoa.setCPF(cpf);
+        pessoa.setNumero(numero);
         String data = "00";
-        data += nome + CHARSPLIT + cpf + CHARSPLIT + numero + CHARSPLIT + senha + "00";
+        data += cpf + getCHARSPLIT() + nome + getCHARSPLIT() + numero + getCHARSPLIT() + senha + "00";
         sendDatagramPacket(data);
     }
 
     public void updateStatusPatient(String btmCardiacos, String statusMovimento, String pressaoSanguinea) throws NullHeartBeatsException, InvalidHeartBeatsException, NullStatusMovementException, SocketException, DataInvalidException {
-        if (patient == null) {
+        if (pessoa == null) {
             return;
         } else {
             String data = "01";
-            data += patient.getCPF() + CHARSPLIT + btmCardiacos + CHARSPLIT + statusMovimento + CHARSPLIT + pressaoSanguinea + "01";
+            data += pessoa.getCPF() + getCHARSPLIT() + btmCardiacos + getCHARSPLIT() + statusMovimento + getCHARSPLIT() + pressaoSanguinea + "01";
             sendDatagramPacket(data);
         }
     }
@@ -174,13 +184,8 @@ public class Controller {
             if (socketClient.isClosed()) {
                 socketClient = new DatagramSocket();
             }
-            if (!connected) {
-                return;
-            }
             DatagramPacket sendPacket;
             byte[] sendData = data.getBytes();
-            this.ipServer = "127.0.0.1";
-            this.portServer = 12345;
             InetAddress address = InetAddress.getByName(this.ipServer);
             sendPacket = new DatagramPacket(sendData, sendData.length, address, this.portServer);
             socketClient.send(sendPacket);
@@ -210,13 +215,19 @@ public class Controller {
         }
     }
 
-    public void testConnection(int time) {
+    /**
+     * Method for test the connection with cloud.
+     *
+     * @return true - If the server responds.
+     */
+    public boolean testConnection() {
         try {
             socketClient = new DatagramSocket();
         } catch (SocketException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Runnable runnable = new Runnable() {
+        Runnable runnable;
+        runnable = new Runnable() {
             @Override
             public void run() {
                 byte[] dataReceive;
@@ -225,9 +236,10 @@ public class Controller {
                 String data;
                 String codeProtocol, lastCodeProtocol;
                 int indexLastCode;
-                do {
+                try {
                     dataReceive = new byte[1024];
                     packetReceive = new DatagramPacket(dataReceive, dataReceive.length);
+                    socketClient.receive(packetReceive);
                     data = new String(packetReceive.getData());
                     codeProtocol = data.substring(0, LENGTHSERVERPROTOCOL);
                     indexLastCode = data.lastIndexOf(codeProtocol);
@@ -236,40 +248,54 @@ public class Controller {
                     if (codeProtocol.equals(lastCodeProtocol)) {
                         System.out.println(codeProtocol);
                         System.out.println(data);
-                        if (codeProtocol == "0x09") {
-                            connected = true;
-                        } else {
-                            connected = false;
-                        }
-                    } else {
-                        System.out.println("A informação recebida tem códigos diferentes!");
-                        return;
+                        connected = codeProtocol == "0x09";
                     }
-
-                } while (connected);
+                } catch (IOException ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    finalize();
+                } catch (Throwable ex) {
+                    Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);// Catch Default
+                }
             }
         };
         Thread threadRun = new Thread(runnable);
         threadRun.start();
-        threadTime(threadRun, time);
+        return connected;
     }
 
-    private void threadTime(Thread thread, int time) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    TimeUnit.SECONDS.sleep(time);
-                    thread.interrupt();
-                    System.out.println("Fim de uma thread");
-                } catch (InterruptedException ex) {
-                    System.out.println("A thread não foi encerrada");
-                }
+    public void connectAccount(String cpf, String senha) {
+
+        String data = "";
+        data = "03" + cpf + getCHARSPLIT() + senha + "03";
+        sendDatagramPacket(data);
+    }
+
+    public String replyServer() {
+        byte[] dataReceive;
+        DatagramPacket packetReceive;
+        String data = null;
+        String codeProtocol, lastCodeProtocol;
+        int indexLastCode;
+
+        dataReceive = new byte[1024];
+        packetReceive = new DatagramPacket(dataReceive, dataReceive.length);
+        try {
+            socketClient.receive(packetReceive);//To await the reply of server.
+            data = new String(packetReceive.getData());// Convert the data bytes for char.
+            codeProtocol = data.substring(0, LENGTHSERVERPROTOCOL);// Get the code of protocol.
+            data = data.substring(LENGTHSERVERPROTOCOL);// Cut the first code.
+            indexLastCode = data.lastIndexOf(codeProtocol);// Get the last index of code.
+            lastCodeProtocol = data.substring(indexLastCode, indexLastCode + LENGTHSERVERPROTOCOL);// Get the last code.
+            data = data.substring(0, indexLastCode);// Now data have only the data
+            if (!codeProtocol.equals(lastCodeProtocol)) {// If the protocol is wrong the data is discarded.
+                data = null;
             }
-        };
-        Thread threadRun;
-        threadRun = new Thread(runnable);
-        thread.start();
+        } catch (IOException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);// Logger default
+        }
+        return data;
     }
 
     /**
@@ -294,5 +320,19 @@ public class Controller {
      */
     public boolean isConnected() {
         return connected;
+    }
+
+    /**
+     * @return the connectedAccount
+     */
+    public boolean isConnectedAccount() {
+        return connectedAccount;
+    }
+
+    /**
+     * @return the CHARSPLIT
+     */
+    public String getCHARSPLIT() {
+        return CHARSPLIT;
     }
 }

@@ -14,6 +14,7 @@ public class Pessoa {
     String nome = null;
     String CPF = null;
     String numero = null;
+    String senha = null;
 
     public String getNome() {
         return nome;
@@ -37,5 +38,19 @@ public class Pessoa {
 
     public void setNumero(String numero) {
         this.numero = numero;
+    }
+
+    /**
+     * @return the senha
+     */
+    public String getSenha() {
+        return senha;
+    }
+
+    /**
+     * @param senha the senha to set
+     */
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }
