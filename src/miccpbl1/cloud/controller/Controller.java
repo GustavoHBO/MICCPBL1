@@ -5,6 +5,15 @@
  */
 package miccpbl1.cloud.controller;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,7 +36,6 @@ public class Controller implements Serializable {
     private final ArrayList<String> listServers = new ArrayList<>();
 
     /*_______________________________________________________________________________________________________________*/
-
     /**
      * Singleton getController
      *
@@ -41,7 +49,6 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Reset the controller
      */
@@ -49,49 +56,55 @@ public class Controller implements Serializable {
         controller = null;
     }
 
+    private Controller() {
+    }
+
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Register the patient on cloud.
      *
      * @param data - Data about the patient.
+     * @throws java.io.IOException
      */
-    public void registerPacient(String data) {
+    public void registerPacient(String data) throws IOException {
         String nome;
         String cpf;
         String numero;
         String senha;
+        int posX, posY;
 
         Paciente paciente;
         String[] splitData = data.split(TOKENSEPARATOR);
 
-        if(splitData.length < 4){
+        if (splitData.length < 4) {
             return;
         }
-        
+
         cpf = splitData[0];
         nome = splitData[1];
         numero = splitData[2];
         senha = splitData[3];
-        paciente = new Paciente(nome, cpf, numero, senha);
+        posX = Integer.parseInt(splitData[4]);
+        posY = Integer.parseInt(splitData[5]);
+        paciente = new Paciente(cpf, nome, numero, senha);
+        paciente.setX(posX);
+        paciente.setY(posY);
 
         if (findPacient(cpf) == null) {
-            System.out.println("Cadastrando Paciente");
             listaPacientes.add(paciente);
         } else {
-            System.out.println("Não Cadastrando Paciente");
             return;
         }
-
+        saveDataPatient();
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Register the server on cloud.
      *
      * @param data - Data with ip and location of server.
-     * @return -1 - Case the parameter data is wrong, 0 - Case exist server with same ip, 1 - Case the server have been registered.
+     * @return -1 - Case the parameter data is wrong, 0 - Case exist server with
+     * same ip, 1 - Case the server have been registered.
      */
     public int registerServer(String data) {
         if (data == null) {
@@ -99,8 +112,8 @@ public class Controller implements Serializable {
         } else if (data.trim().isEmpty()) {
             return -1;
         } else {
-            String ip = splitString(data, TOKENSEPARATOR)[2];
-            if(findServer(ip) == null){
+            String ip = splitString(data, TOKENSEPARATOR)[0];
+            if (findServer(ip) == null) {
                 listServers.add(data);//The data will come formated.
                 return 1;
             }
@@ -109,14 +122,13 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Method for update the status of patient, these case, if the data is
      * received, then the patient is in risk.
      *
      * @param data - cpf*btCardiaco*repouso*pressao*risco, * = string separator.
      */
-    public void refreshStatusPacient(String data) {
+    public void refreshStatusPacient(String data) throws IOException {
         String[] splitedData = splitString(data, TOKENSEPARATOR);
         Paciente patient = findPacient(splitedData[0]);
         if (patient == null) {
@@ -128,10 +140,10 @@ public class Controller implements Serializable {
             patient.getListPressaoSanguinea().add(splitedData[3]);
             patient.getListAcEspecial().add("Risk");
         }
+        saveDataPatient();
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Search the patient registered using the cpf as parameter.
      *
@@ -151,7 +163,6 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Method for split the string received.
      *
@@ -164,7 +175,6 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Return string with the data of patients that are on string received.
      *
@@ -197,7 +207,6 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Search the doctor using the cpf.
      *
@@ -217,9 +226,9 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Find the server by ip.
+     *
      * @param ip - Ip server.
      * @return dataServer - Data about the server.
      */
@@ -230,10 +239,10 @@ public class Controller implements Serializable {
         if (ip == null || ip.trim().isEmpty()) {
             return null;
         }
-        while(it.hasNext()){
+        while (it.hasNext()) {
             dataServer = it.next();
             ipServer = splitString(dataServer, TOKENSEPARATOR);
-            if(ipServer[2].equals(ip)){
+            if (ipServer[0].equals(ip)) {
                 return dataServer;
             }
         }
@@ -241,7 +250,6 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Mount the list with all data of patients
      *
@@ -268,7 +276,6 @@ public class Controller implements Serializable {
     }
 
     /*_______________________________________________________________________________________________________________*/
-    
     /**
      * Return the ip of server based on distance. Calculate with relation with
      * triangle.
@@ -283,7 +290,7 @@ public class Controller implements Serializable {
         Iterator<String> it;
         double vx, vy, dist;
         if (listServers.isEmpty()) {
-            return null;
+            return "";
         }
         it = listServers.iterator();
         server = listServers.get(0);
@@ -304,21 +311,246 @@ public class Controller implements Serializable {
         }
         return server;
     }
-    
+
     /**
      * This method returns the person using the cpf and password registered.
+     *
      * @param cpf - Identification the patient.
      * @param senha - Password the patient.
-     * @return person - If the patient exist and the cpf and password are correct, null - Otherwise.
+     * @return person - If the patient exist and the cpf and password are
+     * correct, null - Otherwise.
      */
-    public String personConnect(String cpf, String senha){
+    public String personConnect(String cpf, String senha) {
         Paciente patient = findPacient(cpf);
-        if(patient == null){
+        if (patient == null) {
             return "0x030x03";
-        } else if (patient.getSenha().equals(senha)){
+        } else if (patient.getSenha().equals(senha)) {
             String ipServer = getIpServerByLocation(patient.getX(), patient.getY());
+            if (ipServer == null) {
+                ipServer = "";//If the ip is null
+            }
             return "0x03" + patient.getCPF() + TOKENSEPARATOR + patient.getNome() + TOKENSEPARATOR + patient.getNumero() + TOKENSEPARATOR + ipServer + "0x03";
         }
         return "0x030x03";
+    }
+
+    private void saveDataServer() throws IOException {
+
+        OutputStream os;
+        OutputStreamWriter osw;
+        BufferedWriter bw;
+        Iterator<String> it;
+        String server;
+
+        File fileServers = new File("./backup/servers");
+        if (!fileServers.exists()) {
+            fileServers.mkdirs();
+        }
+        fileServers = new File("./backup/servers/data.iot");
+        if (!fileServers.exists()) {
+            fileServers.createNewFile();
+        }
+
+        os = new FileOutputStream("./backup/servers/data.iot");
+        osw = new OutputStreamWriter(os);
+        bw = new BufferedWriter(osw);
+
+        bw.write(listServers.size());
+        bw.newLine();
+        it = listServers.iterator();
+        while (it.hasNext()) {
+            server = it.next();
+            bw.write(server);
+            bw.newLine();
+        }
+        bw.close();
+        osw.close();
+        os.close();
+    }
+
+    private void saveDataDoctor() throws IOException {
+
+        OutputStream os;
+        OutputStreamWriter osw;
+        BufferedWriter bw;
+        Iterator<Medico> it;
+        Medico doctor;
+
+        File fileDoctors = new File("./backup/doctors");
+        if (!fileDoctors.exists()) {
+            fileDoctors.mkdirs();
+        }
+        fileDoctors = new File("./backup/doctors/data.iot");
+        if (!fileDoctors.exists()) {
+            fileDoctors.createNewFile();
+        }
+
+        os = new FileOutputStream("./backup/doctors/data.iot");
+        osw = new OutputStreamWriter(os);
+        bw = new BufferedWriter(osw);
+
+        it = listDoctor.iterator();
+        bw.write(listDoctor.size());
+        bw.newLine();
+        while (it.hasNext()) {
+            doctor = it.next();
+            bw.write(doctor.getCPF());
+            bw.newLine();
+            bw.write(doctor.getCrm());
+            bw.newLine();
+            bw.write(doctor.getNome());
+            bw.newLine();
+            bw.write(doctor.getNumero());
+            bw.newLine();
+            bw.write(doctor.getSenha());
+            bw.newLine();
+            bw.write(doctor.getX());
+            bw.newLine();
+            bw.write(doctor.getY());
+            bw.newLine();
+        }
+        bw.close();
+        osw.close();
+        os.close();
+    }
+
+    private void saveDataPatient() throws IOException {
+
+        OutputStream os;
+        OutputStreamWriter osw;
+        BufferedWriter bw;
+
+        File filePatients = new File("./backup/patients");
+        if (!filePatients.exists()) {
+            filePatients.mkdirs();
+        }
+
+        filePatients = new File("./backup/patients/data.iot");
+        if (filePatients.exists()) {
+            filePatients.createNewFile();
+        }
+
+        os = new FileOutputStream("./backup/patients/data.iot");
+        osw = new OutputStreamWriter(os);
+        bw = new BufferedWriter(osw);
+
+        Iterator<Paciente> it = listaPacientes.iterator();
+        Iterator<String> itData;
+        Paciente patient;
+        String data;
+        bw.write(listaPacientes.size());
+        bw.newLine();
+        while (it.hasNext()) {
+            patient = it.next();
+            bw.write(patient.getCPF());
+            bw.newLine();
+            bw.write(patient.getNome());
+            bw.newLine();
+            bw.write(patient.getNumero());
+            bw.newLine();
+            bw.write(patient.getSenha());
+            bw.newLine();
+            bw.write(patient.getX());
+            bw.newLine();
+            bw.write(patient.getY());
+            bw.newLine();
+            bw.write(patient.getListBtCardiacos().size());
+            bw.newLine();
+            itData = patient.getListBtCardiacos().iterator();
+            while (itData.hasNext()) {
+                data = itData.next();
+                bw.write(data);
+                bw.newLine();
+            }
+            bw.write(TOKENSEPARATOR);
+            bw.newLine();
+            itData = patient.getListPressaoSanguinea().iterator();
+            while (itData.hasNext()) {
+                data = itData.next();
+                bw.write(data);
+                bw.newLine();
+            }
+            bw.write(TOKENSEPARATOR);
+            bw.newLine();
+            itData = patient.getListRepouso().iterator();
+            while (itData.hasNext()) {
+                data = itData.next();
+                bw.write(data);
+                bw.newLine();
+            }
+            bw.write(TOKENSEPARATOR);
+            bw.newLine();
+            itData = patient.getListAcEspecial().iterator();
+            while (itData.hasNext()) {
+                data = itData.next();
+                bw.write(data);
+                bw.newLine();
+            }
+        }
+        bw.close();
+        osw.close();
+        os.close();
+    }
+
+    public void readData() throws IOException {
+        readDataPatient();
+    }
+
+    private void readDataPatient() throws IOException {
+
+        FileReader fileReader = null;
+        BufferedReader bufferedReader = null;
+        int sizeList = 0;
+
+        File filePatients = new File("./backup/patients/data.iot");
+        if (!filePatients.exists()) {
+            return;
+        }
+        fileReader = new FileReader(filePatients);
+        bufferedReader = new BufferedReader(fileReader);
+
+        if (!bufferedReader.ready()) {
+            sizeList = Integer.parseInt(bufferedReader.readLine());
+            filePatients.delete();
+            return;
+        }
+        while (bufferedReader.ready()) {
+            Paciente patient;
+            String cpf, nome, numero, senha, posX, posY, data;
+
+            cpf = bufferedReader.readLine();
+            nome = bufferedReader.readLine();
+            numero = bufferedReader.readLine();
+            senha = bufferedReader.readLine();
+            posX = bufferedReader.readLine();
+            posY = bufferedReader.readLine();
+            patient = new Paciente(cpf, nome, numero, senha);
+            patient.setX(Integer.parseInt(posX));
+            patient.setY(Integer.parseInt(posY));
+            data = bufferedReader.readLine();
+            while (!data.equals(TOKENSEPARATOR)) {
+                data = bufferedReader.readLine();
+                patient.getListBtCardiacos().add(data);
+            }
+            data = bufferedReader.readLine();
+            while (!data.equals(TOKENSEPARATOR)) {
+                data = bufferedReader.readLine();
+                patient.getListPressaoSanguinea().add(data);
+            }
+            data = bufferedReader.readLine();
+            while (!data.equals(TOKENSEPARATOR)) {
+                data = bufferedReader.readLine();
+                patient.getListRepouso().add(data);
+            }
+            data = bufferedReader.readLine();
+            while (!data.equals(TOKENSEPARATOR)) {
+                data = bufferedReader.readLine();
+                patient.getListAcEspecial().add(data);
+            }
+            System.out.println(patient.getNome());
+            listaPacientes.add(patient);
+        }
+        bufferedReader.close();
+        fileReader.close();
     }
 }

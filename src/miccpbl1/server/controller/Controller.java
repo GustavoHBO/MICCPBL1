@@ -5,9 +5,6 @@
  */
 package miccpbl1.server.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +21,7 @@ public class Controller implements Serializable {
     private final String TOKENSEPARATOR = "!=";
     private final int LENGTHSERVERPROTOCOL = 4;
     private final int LENGTHPROTOCOL = 2;
-    
+
     private int posX;
     private int posY;
 
@@ -43,6 +40,10 @@ public class Controller implements Serializable {
         controller = null;
     }
 
+    private Controller() {
+
+    }
+
     /**
      * Cadastra o paciente no servidor.
      *
@@ -55,7 +56,7 @@ public class Controller implements Serializable {
         String senha;
 
         Paciente paciente;
-        String[] splitData = data.split(TOKENSEPARATOR);
+        String[] splitData = data.split(getTOKENSEPARATOR());
 
         cpf = splitData[0];
         nome = splitData[1];
@@ -73,38 +74,8 @@ public class Controller implements Serializable {
 
     }
 
-    /**
-     * This method registers these server on cloud, sending the IP, Port, Position X and Position Y. This method ask some
-     * data using the prompt.
-     * @return dataSend - If the data inserted are valid, null - In case of an error in reading the input data.
-     */
-    public String mountDataRegisterCloud() {
-        /* Now, the server will send a packet to cloud for register the ip */
-        String ipCloud, dataSend = null; // This will contains the ip.
-        int portCloud; // This will contains the port.
-        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));// IOS - For read in terminal the ip and port of the cloud.
-        try {
-            System.out.println("Bem-Vindo!");
-            String input;
-            do {
-                System.out.println("\nDigite o IP do servidor Cloud!");
-                input = inFromUser.readLine();
-            } while (!input.matches("\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}"));
-            dataSend = "S0" + input + TOKENSEPARATOR;
-            input = "";
-            do {
-                System.out.println("\nDigite a PORTA do servidor Cloud!");
-                input = inFromUser.readLine();
-            } while (!input.matches("\\d{4}\\d?"));
-            dataSend += input + TOKENSEPARATOR + getPosX()+ TOKENSEPARATOR + getPosY() +"S0";
-        } catch (IOException ex) {
-            System.out.println("ERROR: Impossível ler os dados de entrada!");
-        }
-        return dataSend;
-    }
-
     public void refreshStatusPacient(String data) {
-        String[] splitedData = splitString(data, TOKENSEPARATOR);
+        String[] splitedData = splitString(data, getTOKENSEPARATOR());
         Paciente patient = findPacient(splitedData[0]);
         if (patient == null) {
             return;// Aqui eu poderia lançar uma exceção.
@@ -166,16 +137,16 @@ public class Controller implements Serializable {
             patient = it.next();
             if (patients[i].equals(patient.getCPF())) {
                 data += patient.getCPF();
-                data += TOKENSEPARATOR;
+                data += getTOKENSEPARATOR();
                 data += patient.getListBtCardiacos().get(0);
-                data += TOKENSEPARATOR;
+                data += getTOKENSEPARATOR();
                 data += patient.getListPressaoSanguinea().get(0);
-                data += TOKENSEPARATOR;
+                data += getTOKENSEPARATOR();
                 data += patient.getListRepouso().get(0);
-                data += TOKENSEPARATOR;
+                data += getTOKENSEPARATOR();
                 data += patient.getListAcEspecial().get(0);
                 if (it.hasNext()) {
-                    data += TOKENSEPARATOR;
+                    data += getTOKENSEPARATOR();
                 }
             }
         }
@@ -202,12 +173,12 @@ public class Controller implements Serializable {
         while (it.hasNext()) {
             pat = it.next();
             listPat += pat.getCPF();
-            listPat += TOKENSEPARATOR;
+            listPat += getTOKENSEPARATOR();
             listPat += pat.getNome();
-            listPat += TOKENSEPARATOR;
+            listPat += getTOKENSEPARATOR();
             listPat += pat.getNumero();
             if (it.hasNext()) {
-                listPat += TOKENSEPARATOR;
+                listPat += getTOKENSEPARATOR();
             }
         }
         listPat += "0x08";
@@ -240,5 +211,12 @@ public class Controller implements Serializable {
      */
     public void setPosY(int posY) {
         this.posY = posY;
+    }
+
+    /**
+     * @return the TOKENSEPARATOR
+     */
+    public String getTOKENSEPARATOR() {
+        return TOKENSEPARATOR;
     }
 }

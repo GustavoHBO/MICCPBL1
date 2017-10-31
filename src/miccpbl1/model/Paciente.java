@@ -28,10 +28,10 @@ public class Paciente extends Pessoa implements Serializable{
         this.numero = numeroCelular;
         this.senha = senha;
         
-        listBtCardiacos = new ArrayList<String>();
-        listRepouso = new ArrayList<String>();
-        listPressaoSanguinea = new ArrayList<String>();
-        listAcEspecial = new ArrayList<String>();
+        listBtCardiacos = new ArrayList<>();
+        listRepouso = new ArrayList<>();
+        listPressaoSanguinea = new ArrayList<>();
+        listAcEspecial = new ArrayList<>();
     }
 
     /**

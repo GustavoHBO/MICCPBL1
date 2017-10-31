@@ -5,16 +5,27 @@
  */
 package miccpbl1.client.device.view.controller;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javax.swing.JOptionPane;
 import miccpbl1.client.device.controller.Controller;
+import miccpbl1.client.device.view.HaveStage;
+import miccpbl1.client.device.view.Main;
 import miccpbl1.model.Pessoa;
 
 /**
@@ -52,6 +63,10 @@ public class LoginController implements Initializable {
     private TextField textFieldPortServer = null;
     @FXML
     private TextField textFieldIpServer = null;
+    @FXML
+    private TextField textFieldPosX = null;
+    @FXML
+    private TextField textFieldPosY = null;
 
     /* Statement the Button */
     @FXML
@@ -74,9 +89,12 @@ public class LoginController implements Initializable {
     private Label labelError = null;
     @FXML
     private Label labelStatusConnection = null;
-    
+
     /* Statement class Pessoa */
     private Pessoa pessoa = null;
+
+    Stage stage;
+
     /**
      * Initializes the controller class.
      *
@@ -129,7 +147,7 @@ public class LoginController implements Initializable {
         } else {
             try {
                 labelErrorRegister.setVisible(false);
-                controller.cadastrarPaciente(textFieldName.getText(), textFieldCpf.getText(), textFieldNumber.getText(), textFieldPass.getText());
+                controller.cadastrarPaciente(textFieldName.getText(), textFieldCpfRegister.getText(), textFieldNumber.getText(), textFieldPass.getText(), textFieldPosX.getText(), textFieldPosY.getText());
             } catch (SocketException ex) {
                 labelErrorRegister.setText("ERROR: Não foi possivel estabelecer a conexão ao servidor!");
                 labelErrorRegister.setVisible(true);
@@ -156,46 +174,62 @@ public class LoginController implements Initializable {
         if (connect) {
             labelStatusConnection.setText("Conectado");
             labelStatusConnection.setDisable(false);
-        }else{
+        } else {
             labelStatusConnection.setText("Desconectado");
             labelStatusConnection.setDisable(true);
         }
     }
-    
+
     /**
      * Event for obtains
      */
-    public void eventButtonConnect(){
+    public void eventButtonConnect() {
+
+        try {
+            mountScreen();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "ERROR: Não foi possível iniciar a interface!");
+        }
+
         String cpf, senha;
         cpf = textFieldCpf.getText();
         senha = textFieldPassword.getText();
-        if(cpf.trim().isEmpty() || senha.trim().isEmpty()){
+        if (cpf.trim().isEmpty() || senha.trim().isEmpty()) {
+            labelError.setText("ERROR: Preencha os campos corretamente!");
+            labelError.setVisible(true);
             return;
         }
-        
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                String reply;
-                controller.connectAccount(cpf, senha);
-                reply = controller.replyServer();
-                System.out.println(reply);
-                if (reply.trim().isEmpty()) {
-                    labelError.setText("ERROR: Usuario ou Senha invalido!");
-                    labelError.setVisible(true);
-                } else {
-                    String[] person = reply.split(controller.getCHARSPLIT());
-                    if (person.length < 3) {// If the reply is wrong.
-                        return;
-                    }
-                    pessoa = new Pessoa();
-                    pessoa.setCPF(person[0]);
-                    pessoa.setNome(person[1]);
-                    pessoa.setNumero(person[2]);
-                }
+
+        String reply;
+        controller.connectAccount(cpf, senha);
+        reply = controller.replyServer();
+        System.out.println(reply);
+        if (reply.trim().isEmpty()) {
+            labelError.setText("ERROR: Usuario ou Senha invalido!");
+            labelError.setVisible(true);
+        } else {
+            String[] person = reply.split(controller.getCHARSPLIT());
+            if (person.length < 3) {// If the reply is wrong.
+                return;
             }
-        };
-        Thread thread = new Thread(run);
-        thread.start();
+            pessoa = new Pessoa();
+            pessoa.setCPF(person[0]);
+            pessoa.setNome(person[1]);
+            pessoa.setNumero(person[2]);
+            controller.setIpServer(person[4]);
+            controller.setPortServer(Integer.parseInt(person[4]));
+            try {
+                mountScreen();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "ERROR: Não foi possível iniciar a interface!");
+            }
+        }
+    }
+
+    private void mountScreen() throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("Interface.fxml"));
+
+        Scene scene = new Scene(root);
+        HaveStage.instance(null).loadNewStage(root);
     }
 }

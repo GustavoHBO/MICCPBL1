@@ -93,8 +93,8 @@ public class Controller implements Serializable {
             if (port < 1024 || port > 65535) {
                 throw new PortServerInvalidException();
             }
-            this.portServer = port;
-            this.ipServer = ipServer;
+            this.setPortServer(port);
+            this.setIpServer(ipServer);
             sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
             socketClient.send(sendPacket);
 
@@ -149,13 +149,16 @@ public class Controller implements Serializable {
 
     }
 
-    public void cadastrarPaciente(String nome, String cpf, String numero, String senha) throws SocketException {
+    public void cadastrarPaciente(String nome, String cpf, String numero, String senha, String posX, String posY) throws SocketException {
         pessoa = new Pessoa();
         pessoa.setNome(nome);
         pessoa.setCPF(cpf);
         pessoa.setNumero(numero);
+        pessoa.setSenha(senha);
+        pessoa.setX(Integer.parseInt(posX));
+        pessoa.setY(Integer.parseInt(posY));
         String data = "00";
-        data += cpf + getCHARSPLIT() + nome + getCHARSPLIT() + numero + getCHARSPLIT() + senha + "00";
+        data += cpf + getCHARSPLIT() + nome + getCHARSPLIT() + numero + getCHARSPLIT() + senha + getCHARSPLIT() + posX + getCHARSPLIT() + posY + "00";
         sendDatagramPacket(data);
     }
 
@@ -186,8 +189,8 @@ public class Controller implements Serializable {
             }
             DatagramPacket sendPacket;
             byte[] sendData = data.getBytes();
-            InetAddress address = InetAddress.getByName(this.ipServer);
-            sendPacket = new DatagramPacket(sendData, sendData.length, address, this.portServer);
+            InetAddress address = InetAddress.getByName(this.getIpServer());
+            sendPacket = new DatagramPacket(sendData, sendData.length, address, this.getPortServer());
             socketClient.send(sendPacket);
         } catch (IOException ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
@@ -284,6 +287,8 @@ public class Controller implements Serializable {
         try {
             socketClient.receive(packetReceive);//To await the reply of server.
             data = new String(packetReceive.getData());// Convert the data bytes for char.
+            System.out.println("Chegou: " + data);
+            System.out.println(data);
             codeProtocol = data.substring(0, LENGTHSERVERPROTOCOL);// Get the code of protocol.
             data = data.substring(LENGTHSERVERPROTOCOL);// Cut the first code.
             indexLastCode = data.lastIndexOf(codeProtocol);// Get the last index of code.
@@ -334,5 +339,33 @@ public class Controller implements Serializable {
      */
     public String getCHARSPLIT() {
         return CHARSPLIT;
+    }
+
+    /**
+     * @return the ipServer
+     */
+    public String getIpServer() {
+        return ipServer;
+    }
+
+    /**
+     * @param ipServer the ipServer to set
+     */
+    public void setIpServer(String ipServer) {
+        this.ipServer = ipServer;
+    }
+
+    /**
+     * @return the portServer
+     */
+    public int getPortServer() {
+        return portServer;
+    }
+
+    /**
+     * @param portServer the portServer to set
+     */
+    public void setPortServer(int portServer) {
+        this.portServer = portServer;
     }
 }

@@ -18,7 +18,7 @@ import miccpbl1.cloud.controller.Controller;
  * @author gustavo
  */
 public class Cloud {
-    
+
     private final String TOKENSEPARATOR = "!=";
 
     private Controller controllerServer = null;
@@ -35,7 +35,8 @@ public class Cloud {
 
     /**
      * The main method.
-     * @param args 
+     *
+     * @param args
      */
     public static void main(String args[]) {
         try {
@@ -46,14 +47,22 @@ public class Cloud {
     }
 
     /**
-     * Initialize the server, for to receiver connections and identify the actions.
-     * @throws SocketException 
+     * Initialize the server, for to receiver connections and identify the
+     * actions.
+     *
+     * @throws SocketException
      */
     private void startServer() throws SocketException {
         controllerServer = Controller.getController();
         serverSocket = new DatagramSocket(port);
         receiveData = new byte[1024];
 
+        try {
+            controllerServer.readData();
+        } catch (IOException ex) {
+            System.out.println("ERROR: Não foi possível realizar a leitura do banco de dados!");
+        }
+        
         while (true) {
             try {
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -64,6 +73,7 @@ public class Cloud {
                     @Override
                     public void run() {
                         String data = new String(receivePacket.getData());
+                        System.out.println("Chegou: " + data);
                         identifyAction(data);
                     }
 
@@ -80,14 +90,24 @@ public class Cloud {
                             data = data.substring(lengthCodeProtocol, lastCodeIndex);
                             switch (initCode) {
                                 case "00":
-                                    System.out.println("Paciente Registrado!");
-                                    System.out.println(data);
-                                    controllerServer.registerPacient(data);
+                                     {
+                                        try {
+                                            controllerServer.registerPacient(data);
+                                        } catch (IOException ex) {
+                                            System.out.println("ERROR: Não foi possível fazer backup dos dados");
+                                        }
+                                    }
                                     break;
                                 case "01":
                                     System.out.println("Atualizando dados do Paciente");
                                     System.out.println(data);
-                                    controllerServer.refreshStatusPacient(data);
+                                     {
+                                        try {
+                                            controllerServer.refreshStatusPacient(data);
+                                        } catch (IOException ex) {
+                                           System.out.println("ERROR: Não foi possível fazer backup dos dados");
+                                        }
+                                    }
                                     break;
                                 case "03":
                                     System.out.println("Conectando o cliente!");
@@ -123,6 +143,7 @@ public class Cloud {
 
     /**
      * Send datagrams for the client connected.
+     *
      * @param data - Data to send.
      */
     private void sendDatagramPacket(String data) {
