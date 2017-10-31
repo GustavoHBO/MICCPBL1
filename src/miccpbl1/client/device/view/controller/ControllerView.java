@@ -8,6 +8,7 @@ package miccpbl1.client.device.view.controller;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -107,9 +108,11 @@ public class ControllerView implements Initializable {
         this.controller = Controller.getController();
     }
 
-    /** Event the button rangeRefresh.
-    *
-    **/
+    /**
+     * Event the button rangeRefresh.
+     *
+     *
+     */
     @FXML
     private void eventUpdateRangeRefresh() {
 
@@ -312,20 +315,24 @@ public class ControllerView implements Initializable {
     @FXML
     private void eventBtnConnect() {
         try {
-            if(textFieldNome.getText().trim().isEmpty() || textFieldCpf.getText().trim().isEmpty() || textFieldNumero.getText().trim().isEmpty()){
-                JOptionPane.showMessageDialog(null, "Insira os dados corretamente!");
-                return;
-            }
-            controller.connectionServer(textFieldIpServer.getText(), textFieldPortServer.getText());
-            if (controller.isConnected()) {
-                labelStatusConection.setText("Conectado");
-                labelStatusConection.setDisable(false);
-            } else {
-                labelStatusConection.setText("Desconectado");
-                labelStatusConection.setDisable(true);
-            }
-        } catch (IpServerInvalidException | PortServerInvalidException | IOException ex) {
+//            if(textFieldNome.getText().trim().isEmpty() || textFieldCpf.getText().trim().isEmpty() || textFieldNumero.getText().trim().isEmpty()){
+//                JOptionPane.showMessageDialog(null, "Insira os dados corretamente!");
+//                return;
+//            }
+            controller.connectionServer(controller.getIpServer(), Integer.toString(controller.getPortServer()));
+//            if (controller.isConnected()) {
+//                labelStatusConection.setText("Conectado");
+//                labelStatusConection.setDisable(false);
+//            } else {
+//                labelStatusConection.setText("Desconectado");
+//                labelStatusConection.setDisable(true);
+//            }
+        } catch (IpServerInvalidException | PortServerInvalidException s) {
             JOptionPane.showMessageDialog(null, "Ip ou Porta Inválida!");
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ControllerView.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

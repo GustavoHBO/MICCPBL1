@@ -97,7 +97,7 @@ public class Controller implements Serializable {
             this.setIpServer(ipServer);
             sendPacket = new DatagramPacket(sendData, sendData.length, ipAddress, port);
             socketClient.send(sendPacket);
-
+            
             run = new Runnable() {
                 @Override
                 public void run() {
@@ -150,24 +150,24 @@ public class Controller implements Serializable {
     }
 
     public void cadastrarPaciente(String nome, String cpf, String numero, String senha, String posX, String posY) throws SocketException {
-        pessoa = new Pessoa();
-        pessoa.setNome(nome);
-        pessoa.setCPF(cpf);
-        pessoa.setNumero(numero);
-        pessoa.setSenha(senha);
-        pessoa.setX(Integer.parseInt(posX));
-        pessoa.setY(Integer.parseInt(posY));
+        setPessoa(new Pessoa());
+        getPessoa().setNome(nome);
+        getPessoa().setCPF(cpf);
+        getPessoa().setNumero(numero);
+        getPessoa().setSenha(senha);
+        getPessoa().setX(Integer.parseInt(posX));
+        getPessoa().setY(Integer.parseInt(posY));
         String data = "00";
         data += cpf + getCHARSPLIT() + nome + getCHARSPLIT() + numero + getCHARSPLIT() + senha + getCHARSPLIT() + posX + getCHARSPLIT() + posY + "00";
         sendDatagramPacket(data);
     }
 
     public void updateStatusPatient(String btmCardiacos, String statusMovimento, String pressaoSanguinea) throws NullHeartBeatsException, InvalidHeartBeatsException, NullStatusMovementException, SocketException, DataInvalidException {
-        if (pessoa == null) {
+        if (getPessoa() == null) {
             return;
         } else {
             String data = "01";
-            data += pessoa.getCPF() + getCHARSPLIT() + btmCardiacos + getCHARSPLIT() + statusMovimento + getCHARSPLIT() + pressaoSanguinea + "01";
+            data += getPessoa().getCPF() + getCHARSPLIT() + btmCardiacos + getCHARSPLIT() + statusMovimento + getCHARSPLIT() + pressaoSanguinea + "01";
             sendDatagramPacket(data);
         }
     }
@@ -180,6 +180,8 @@ public class Controller implements Serializable {
 
     private void sendDatagramPacket(String data) {
 
+        System.out.println("Enviando:" + data);
+        System.out.println("Para:" + this.getIpServer() + "  " + this.getPortServer());
         try {
             if (socketClient == null) {
                 socketClient = new DatagramSocket();
@@ -367,5 +369,19 @@ public class Controller implements Serializable {
      */
     public void setPortServer(int portServer) {
         this.portServer = portServer;
+    }
+
+    /**
+     * @return the pessoa
+     */
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    /**
+     * @param pessoa the pessoa to set
+     */
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
     }
 }

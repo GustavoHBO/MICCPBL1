@@ -57,11 +57,13 @@ public class Cloud {
         serverSocket = new DatagramSocket(port);
         receiveData = new byte[1024];
 
-        try {
-            controllerServer.readData();
-        } catch (IOException ex) {
-            System.out.println("ERROR: Não foi possível realizar a leitura do banco de dados!");
-        }
+//        try {
+//            controllerServer.readData();
+//        } catch (IOException ex) {
+//            System.out.println("ERROR: Não foi possível realizar a leitura do banco de dados!");
+//        }
+
+        System.out.println("Cloud Iniciado!");
         
         while (true) {
             try {

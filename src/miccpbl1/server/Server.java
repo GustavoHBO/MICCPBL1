@@ -138,8 +138,9 @@ public class Server {
         try {
             serverSocket.receive(packetReceive);//To await the reply of server.
             data = new String(packetReceive.getData());// Convert the data bytes for char.
-            if(data.trim().isEmpty()){
-                return data;
+            System.out.println("Chegou: " + data);
+            if(data.trim().isEmpty() || data.length() < LENGTHCODEPROTOCOL *2){
+                return "";
             }
             codeProtocol = data.substring(0, LENGTHCODEPROTOCOLSERVER);// Get the code of protocol.
             data = data.substring(LENGTHCODEPROTOCOLSERVER);// Cut the first code.

@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,8 +22,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javax.swing.JOptionPane;
 import miccpbl1.client.device.controller.Controller;
-import miccpbl1.client.device.view.HaveStage;
-import miccpbl1.client.device.view.Main;
 import miccpbl1.model.Pessoa;
 
 /**
@@ -89,6 +85,9 @@ public class LoginController implements Initializable {
     private Label labelError = null;
     @FXML
     private Label labelStatusConnection = null;
+    
+    @FXML
+    private AnchorPane pane = null;
 
     /* Statement class Pessoa */
     private Pessoa pessoa = null;
@@ -185,12 +184,6 @@ public class LoginController implements Initializable {
      */
     public void eventButtonConnect() {
 
-        try {
-            mountScreen();
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "ERROR: Não foi possível iniciar a interface!");
-        }
-
         String cpf, senha;
         cpf = textFieldCpf.getText();
         senha = textFieldPassword.getText();
@@ -216,7 +209,8 @@ public class LoginController implements Initializable {
             pessoa.setCPF(person[0]);
             pessoa.setNome(person[1]);
             pessoa.setNumero(person[2]);
-            controller.setIpServer(person[4]);
+            controller.setPessoa(pessoa);
+            controller.setIpServer(person[3]);
             controller.setPortServer(Integer.parseInt(person[4]));
             try {
                 mountScreen();
@@ -228,8 +222,9 @@ public class LoginController implements Initializable {
 
     private void mountScreen() throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("Interface.fxml"));
-
-        Scene scene = new Scene(root);
-        HaveStage.instance(null).loadNewStage(root);
+        Stage stage = new Stage();
+        Scene scene = new Scene(root, 600, 500);
+        stage.setScene(scene);
+        stage.show();
     }
 }
