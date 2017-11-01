@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 import miccpbl1.server.controller.Controller;
 
 /**
- *
+ *Server fog, obtain the data of client, analyze and send the cloud.
  * @author gustavo
  */
 public class Server {
@@ -48,7 +48,12 @@ public class Server {
             System.out.println("ERROR: O Host não é reconhecido!");
         }
     }
-    
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * Start the server, and register him on cloud.
+     * @throws SocketException - If the ip or port is in user.
+     * @throws UnknownHostException  - Case the host be unknown.
+     */
     private void startServer() throws SocketException, UnknownHostException {
         controllerServer = Controller.getController();
         serverSocket = new DatagramSocket(port);
@@ -115,6 +120,13 @@ public class Server {
         }
     }
     
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * Send an data string for a client with ip and a port.
+     * @param data - Data to send.
+     * @param ip - Ip of destiny.
+     * @param port - Port of destiny.
+     */
     private void sendDatagramPacket(String data, InetAddress ip, int port) {
         try {
             DatagramPacket sendPacket;
@@ -126,6 +138,11 @@ public class Server {
         }
     }
     
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * Return the reply of server.
+     * @return string - Reply of server.
+     */
     public String replyServer() {
         byte[] dataReceive;
         DatagramPacket packetReceive;
@@ -156,6 +173,7 @@ public class Server {
         return data;
     }
     
+    /*_______________________________________________________________________________________________________________*/
     /**
      * This method registers these server on cloud, sending the IP, Port, Position X and Position Y. This method ask some
      * data using the prompt.

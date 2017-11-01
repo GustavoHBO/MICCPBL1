@@ -19,20 +19,31 @@ import miccpbl1.cloud.controller.Controller;
  */
 public class Cloud {
 
+    /*Token for split the string*/
     private final String TOKENSEPARATOR = "!=";
 
+    /* Controller for control usage */
     private Controller controllerServer = null;
 
+    /*Port of cloud*/
     private final int port = 12345;
 
+    /* Protocol code size */
     private final int lengthCodeProtocol = 2;
 
+    /* Socket for send packet */
     private DatagramSocket serverSocket = null;
+    
+    /* Packet for mount the mensage */
     private DatagramPacket receivePacket = null;
 
+    /* Array for store the data receive */
     byte[] receiveData = null;
+    
+    /* Array for store the data send */
     byte[] sendData = null;
 
+    /*_______________________________________________________________________________________________________________*/
     /**
      * The main method.
      *
@@ -46,6 +57,7 @@ public class Cloud {
         }
     }
 
+    /*_______________________________________________________________________________________________________________*/
     /**
      * Initialize the server, for to receiver connections and identify the
      * actions.
@@ -57,8 +69,9 @@ public class Cloud {
         serverSocket = new DatagramSocket(port);
         receiveData = new byte[1024];
 
+        /* The code below, will save the data in archives .txt */
 //        try {
-//            controllerServer.readData();
+//            controllerServer.readData();// This exception is lunch when try read a string and convert to int
 //        } catch (IOException ex) {
 //            System.out.println("ERROR: Não foi possível realizar a leitura do banco de dados!");
 //        }
@@ -128,7 +141,7 @@ public class Cloud {
                                 case "S0":// The code that start with S* was from a server.
                                     System.out.println("Cadastrando Servidor");
                                     int value = controllerServer.registerServer(data);
-                                    sendDatagramPacket("0xS0" + value + "0xS0");
+                                    sendDatagramPacket("0xS0" + value + "0xS0");// Send the datagram dor server, notify that her are resgistered.
                                     break;
                                 default:
                                     break;
@@ -143,6 +156,7 @@ public class Cloud {
         }
     }
 
+    /*_______________________________________________________________________________________________________________*/
     /**
      * Send datagrams for the client connected.
      *

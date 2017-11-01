@@ -8,7 +8,6 @@ package miccpbl1.cloud.controller;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,16 +23,17 @@ import miccpbl1.model.Paciente;
  * Class of control the connections between the servers and clients. Storage too
  * the data of patients in risk, servers and doctors.
  *
- * @author Gustavo
+ * @author Gustavo Henrique
  */
 public class Controller implements Serializable {
 
+    /* Token for split the strings */
     private final String TOKENSEPARATOR = "!=";
 
-    private static Controller controller = null;
-    private final ArrayList<Paciente> listaPacientes = new ArrayList<>();
-    private final ArrayList<Medico> listDoctor = new ArrayList<>();
-    private final ArrayList<String> listServers = new ArrayList<>();
+    private static Controller controller = null; // This controller, standart singleton.
+    private final ArrayList<Paciente> listaPacientes = new ArrayList<>();// ArrayList Patients.
+    private final ArrayList<Medico> listDoctor = new ArrayList<>();// ArrayList Doctors.
+    private final ArrayList<String> listServers = new ArrayList<>();// ArrayList Strings.
 
     /*_______________________________________________________________________________________________________________*/
     /**
@@ -334,6 +334,11 @@ public class Controller implements Serializable {
         return "0x030x03";
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * This method is responsible for store the server data in cloud.
+     * @throws IOException - If it is impossible read or write the archive .txt
+     */
     private void saveDataServer() throws IOException {
 
         OutputStream os;
@@ -368,6 +373,11 @@ public class Controller implements Serializable {
         os.close();
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * This method is responsible for store the doctor data in cloud.
+     * @throws IOException - If it is impossible read or write the archive .txt
+     */
     private void saveDataDoctor() throws IOException {
 
         OutputStream os;
@@ -414,6 +424,11 @@ public class Controller implements Serializable {
         os.close();
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * This method is responsible for store the patient data in cloud.
+     * @throws IOException - If it is impossible read or write the archive .txt
+     */
     private void saveDataPatient() throws IOException {
 
         OutputStream os;
@@ -440,6 +455,7 @@ public class Controller implements Serializable {
         String data;
         bw.write(listaPacientes.size());
         bw.newLine();
+        /* While for reader the data about each doctor */
         while (it.hasNext()) {
             patient = it.next();
             bw.write(patient.getCPF());
@@ -492,28 +508,39 @@ public class Controller implements Serializable {
         os.close();
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * Get the data store in archive and load for the cloud.
+     * @throws IOException 
+     */
     public void readData() throws IOException {
         readDataPatient();
     }
 
+    /*_______________________________________________________________________________________________________________*/
+    /**
+     * Get the data of patient in archives and put on cloud.
+     * @throws IOException - If it is impossible read or write the archive .txt
+     */
     private void readDataPatient() throws IOException {
 
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;
         int sizeList = 0;
 
-        File filePatients = new File("./backup/patients/data.iot");
-        if (!filePatients.exists()) {
+        File filePatients = new File("./backup/patients/data.iot");//Create the file for verify if the archive exists.
+        if (!filePatients.exists()) {//If the file not exist it is returned
             return;
         }
-        fileReader = new FileReader(filePatients);
-        bufferedReader = new BufferedReader(fileReader);
+        fileReader = new FileReader(filePatients);// FileReader it read the archive.
+        bufferedReader = new BufferedReader(fileReader);//BufferedReader it store the data read in a buffer.
 
         if (!bufferedReader.ready()) {
             sizeList = Integer.parseInt(bufferedReader.readLine());
             filePatients.delete();
             return;
         }
+        /*While for read all data about each patient*/
         while (bufferedReader.ready()) {
             Paciente patient;
             String cpf, nome, numero, senha, posX, posY, data;
@@ -548,9 +575,9 @@ public class Controller implements Serializable {
                 patient.getListAcEspecial().add(data);
             }
             System.out.println(patient.getNome());
-            listaPacientes.add(patient);
+            listaPacientes.add(patient);// Save the patient on list.
         }
-        bufferedReader.close();
-        fileReader.close();
+        bufferedReader.close();// Close the buffer.
+        fileReader.close();// Close the reader.
     }
 }
